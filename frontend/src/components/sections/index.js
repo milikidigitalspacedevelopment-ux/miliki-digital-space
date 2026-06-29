@@ -1,0 +1,12 @@
+export { default as HeroSection } from "./HeroSection";
+export { default as StatsSection } from "./StatsSection";
+export { default as ProgramsSection } from "./ProgramsSection";
+export { default as CoursesSection } from "./CoursesSection";
+export { default as EventsSection } from "./EventsSection";
+export { default as StoriesSection } from "./StoriesSection";
+export { default as CampaignsSection } from "./CampaignsSection";
+export { default as PartnersSection } from "./PartnersSection";
+export { default as TestimonialsSection } from "./TestimonialsSection";
+export { default as NewsletterSection } from "./NewsletterSection";
+export { default as ContactSection } from "./ContactSection";
+export { default as CTASection } from "./CTASection";

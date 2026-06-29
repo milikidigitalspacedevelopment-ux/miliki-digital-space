@@ -1,0 +1,52 @@
+:root{
+    --primary-color:#005c2c;
+    --secondary-color:#d4a017;
+    --accent-color:#0c7b3e;
+
+    --dark-color:#1f2937;
+    --light-color:#ffffff;
+    --gray-color:#f8f9fa;
+
+    --text-color:#374151;
+
+    /* Background palette (keep three colors site-wide) */
+    --bg-green:#eaf6ee; /* light green background */
+    --bg-yellow:#fff8e6; /* light yellow background */
+    --bg-white:#ffffff; /* white background */
+
+    /* Default background (preferred) */
+    --bg-color:var(--bg-green);
+
+    /* Bootstrap overrides - map Bootstrap color tokens to our three-color palette */
+    --bs-body-bg: var(--bg-color);
+    --bs-body-color: var(--text-color);
+    --bs-white: var(--bg-white);
+
+    /* Make Bootstrap background utilities align with the site's three colors */
+    --bs-primary: var(--bg-green);
+    --bs-secondary: var(--bg-yellow);
+
+    /* Keep component semantic colors for contrast (buttons, alerts) */
+    --bs-success: var(--primary-color);
+    --bs-warning: var(--secondary-color);
+    --bs-body-font-family: system-ui, -apple-system, sans-serif;
+
+    /* Replace Bootstrap blues with site green */
+    --bs-blue: var(--primary-color);
+    --bs-info: var(--primary-color);
+    --bs-link-color: var(--primary-color);
+    --bs-link-hover-color: var(--accent-color);
+
+    /* RGB tokens used by some Bootstrap utilities */
+    --bs-primary-rgb: 0,92,44; /* rgb(0,92,44) for #005c2c */
+    --bs-info-rgb: 0,92,44;
+
+    /* Button defaults to green primary with white text for contrast */
+    --bs-btn-bg: var(--primary-color);
+    --bs-btn-color: var(--bg-white);
+    --bs-btn-hover-bg: var(--accent-color);
+
+    --border-radius:12px;
+
+    --transition:0.3s ease;
+}

@@ -1,0 +1,260 @@
+/* =========================
+   RESET
+========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:system-ui,-apple-system,sans-serif;
+    color:var(--text-color);
+    background:var(--bg-color);
+    overflow-x:hidden;
+}
+
+a{
+    text-decoration:none;
+}
+
+img{
+    max-width:100%;
+}
+
+ul{
+    list-style:none;
+}
+
+.section-padding{
+    padding:100px 0;
+}
+
+.bg-light-gray{
+    background:var(--gray-color);
+}
+
+.text-primary-custom{
+    color:var(--primary-color);
+}
+
+.text-secondary-custom{
+    color:var(--secondary-color);
+}
+
+.rounded-custom{
+    border-radius:12px;
+}
+
+
+
+
+/* Mobile scrollable bottom navigation (used by MobileMenu) */
+.mobile-scroll .overflow-auto{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+}
+
+.mobile-scroll .mobile-nav{
+    padding:.4rem .5rem;
+    gap:.5rem;
+    white-space:nowrap;
+}
+
+.mobile-scroll .mobile-nav .nav-link{
+    padding:.35rem .6rem;
+    font-size:.95rem;
+    color:var(--text-color);
+    display:inline-block;
+}
+
+/* Ensure the fixed bottom bar doesn't cover page content too aggressively */
+body{
+    padding-bottom:64px; /* matches approximate height of mobile nav */
+}
+
+/* Mobile sidebar styling */
+
+.mobile-sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:64px; /* leave space for bottom nav */
+    width:200px; /* fixed width, hidden by transform */
+    transform:translateX(-100%);
+    z-index:1050;
+    padding-top:8px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:flex-start;
+    overflow:hidden;
+    transition:transform .28s ease;
+}
+
+.mobile-sidebar.open{
+    transform:translateX(0);
+}
+
+.mobile-sidebar .nav-link{
+    color:var(--bg-white);
+    padding:.5rem .75rem;
+    font-size:.95rem;
+    text-align:left;
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+}
+
+.mobile-sidebar .sidebar-icon{
+    font-size:1.1rem;
+}
+
+.mobile-sidebar .link-text{
+    opacity:0;
+    transition:opacity .18s ease, max-width .18s ease;
+    max-width:0;
+    overflow:hidden;
+    display:inline-block;
+}
+
+.mobile-sidebar.open .link-text{
+    opacity:1;
+    max-width:180px;
+}
+
+.mobile-sidebar .toggle-btn{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    box-shadow:0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* When the sidebar is open, push content to the right */
+/* No body shift when sidebar opens; sidebar overlays content */
+@media (max-width: 991px){
+    body{ padding-left:0; }
+}
+
+/* Floating open button (visible when sidebar is closed) */
+.mobile-open-btn{
+    position:fixed;
+    left:8px;
+    top:8px;
+    z-index:1070;
+    width:40px;
+    height:40px;
+    padding:0;
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* Hide mobile-open-btn on larger screens */
+@media(min-width:992px){
+    .mobile-open-btn{ display:none; }
+}
+
+/* Bottom bar: ensure full-width items, no scrolling */
+.mobile-bottom-bar .main-bottom-link{
+    flex:1 1 auto;
+    text-decoration:none;
+}
+
+.mobile-bottom-bar .main-bottom-link div{
+    font-size:12px;
+}
+
+/* Testimonials marquee */
+.testimonial-marquee-wrapper{
+    overflow:hidden;
+    width:100%;
+}
+
+.testimonial-marquee-track{
+    display:flex;
+    gap:1.25rem;
+    align-items:stretch;
+    animation:marqueeTestimonial 24s linear infinite;
+}
+
+.testimonial-marquee-track:hover{
+    animation-play-state:paused;
+}
+
+.testimonial-card{
+    flex:0 0 clamp(260px, 33%, 360px);
+    min-width:260px;
+}
+
+.testimonial-card .card{
+    min-height:100%;
+}
+
+/* Gallery album marquee */
+.gallery-album-list{
+    display:grid;
+    gap:2rem;
+}
+
+.gallery-album{
+    background:rgba(255,255,255,0.95);
+    padding:1rem;
+    border-radius:1rem;
+    box-shadow:0 14px 35px rgba(0,0,0,0.08);
+}
+
+.gallery-album h3{
+    margin-bottom:1rem;
+    font-size:1.25rem;
+}
+
+.gallery-marquee-wrapper{
+    overflow:hidden;
+    width:100%;
+}
+
+.gallery-marquee-track{
+    display:flex;
+    gap:1rem;
+    animation:marqueeGallery 28s linear infinite;
+    padding-bottom:0.25rem;
+}
+
+.gallery-marquee-track:hover{
+    animation-play-state:paused;
+}
+
+.gallery-album-item{
+    flex:0 0 clamp(240px, 30%, 320px);
+    min-width:240px;
+}
+
+.gallery-album-item img{
+    display:block;
+    width:100%;
+    border-radius:20px;
+}
+
+@keyframes marqueeTestimonial{
+    0%{transform:translateX(0);}
+    100%{transform:translateX(-50%);}
+}
+
+@keyframes marqueeGallery{
+    0%{transform:translateX(0);}
+    100%{transform:translateX(-50%);}
+}
+
+@media (max-width: 768px){
+    .testimonial-marquee-track,
+    .gallery-marquee-track{
+        gap:0.9rem;
+    }
+
+    .testimonial-card,
+    .gallery-album-item{
+        flex:0 0 clamp(220px, 75%, 300px);
+    }
+}

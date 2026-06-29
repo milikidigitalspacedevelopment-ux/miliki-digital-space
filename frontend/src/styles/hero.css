@@ -1,0 +1,627 @@
+/* ==========================================================
+   HERO SECTION
+========================================================== */
+
+.hero-section{
+    position:relative;
+    overflow:hidden;
+    background:#f8f9fa;
+    padding:5rem 0;
+}
+
+.hero-section .container{
+    position:relative;
+    z-index:2;
+}
+
+/* Decorative background */
+
+.hero-section::before{
+    content:"";
+    position:absolute;
+    width:650px;
+    height:650px;
+    top:-300px;
+    right:-300px;
+    border-radius:50%;
+    border:2px solid rgba(25,135,84,.05);
+}
+
+.hero-section::after{
+    content:"";
+    position:absolute;
+    width:450px;
+    height:450px;
+    left:-200px;
+    bottom:-200px;
+    border-radius:50%;
+    background:
+        radial-gradient(
+            rgba(25,135,84,.08),
+            transparent 70%
+        );
+}
+
+/* ==========================================================
+   TYPOGRAPHY
+========================================================== */
+
+.hero-badge{
+    display:inline-flex;
+    align-items:center;
+    padding:.7rem 1.3rem;
+    border-radius:999px;
+    background:#eaf8ef;
+    color:var(--primary-color);
+    font-weight:600;
+    margin-bottom:1.5rem;
+}
+
+.hero-title{
+    font-size:4rem;
+    font-weight:800;
+    line-height:1.05;
+    margin-bottom:1.5rem;
+}
+
+.hero-subtitle{
+    max-width:560px;
+    color:#6c757d;
+    font-size:1.15rem;
+    line-height:1.8;
+    margin-bottom:2rem;
+}
+
+.hero-buttons{
+    display:flex;
+    gap:1rem;
+    flex-wrap:wrap;
+}
+
+.hero-primary-btn{
+    border-radius:50px;
+    padding:.9rem 2rem;
+}
+
+.hero-secondary-btn{
+    display:flex;
+    align-items:center;
+    color:var(--primary-color);
+    font-weight:700;
+}
+
+/* ==========================================================
+   DESKTOP IMAGE
+========================================================== */
+
+.hero-image-container{
+    position:relative;
+    width:550px;
+    margin:auto;
+}
+
+.hero-image-container::before{
+    content:"";
+    position:absolute;
+    width:420px;
+    height:420px;
+    left:-40px;
+    top:40px;
+    border-radius:50%;
+    background:
+        radial-gradient(
+            rgba(25,135,84,.45),
+            transparent 70%
+        );
+    filter:blur(30px);
+}
+
+.hero-image-wrapper{
+    position:relative;
+    width:500px;
+    height:500px;
+    overflow:hidden;
+    border-radius:
+        55% 45% 60% 40%
+        /
+        35% 55% 45% 65%;
+
+    box-shadow:
+        0 30px 70px rgba(0,0,0,.15);
+
+    animation:heroFloat 6s ease-in-out infinite;
+}
+
+.hero-image{
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    width:100%;
+    height:100%;
+    min-width:100%;
+    min-height:100%;
+    max-width:none;
+    max-height:none;
+    object-fit:cover;
+    object-position:center center;
+    display:block;
+    border-radius:inherit;
+}
+
+/* ==========================================================
+   FLOATING CARDS
+========================================================== */
+.hero-stat-card{
+    position:absolute;
+    background:rgba(255,255,255,.85);
+    backdrop-filter:blur(25px) saturate(180%);
+    border:1px solid rgba(255,255,255,.4);
+    padding:15px 20px;
+    border-radius:18px;
+
+    box-shadow:
+        0 8px 32px rgba(0,0,0,.1),
+        inset 0 2px 4px rgba(255,255,255,.5);
+
+    z-index:5;
+
+    min-width:160px;
+
+    animation:floatCard 4s ease-in-out infinite;
+}
+
+.hero-stat-card h3{
+    color:var(--primary-color);
+    font-size:1.8rem;
+    font-weight:700;
+    margin-bottom:5px;
+}
+
+.hero-stat-card p{
+    margin:0;
+    color:#6c757d;
+    font-size:.95rem;
+}
+
+
+/* Top right card */
+.stat-card-1{
+    top:60px;
+    right:-50px;
+}
+
+
+/* Bottom left card */
+.stat-card-2{
+    bottom:70px;
+    left:-60px;
+}
+
+
+/* Optional third card */
+.stat-card-3{
+    bottom:-20px;
+    right:20px;
+}
+
+/* ==========================================================
+   MOBILE IMAGE
+========================================================== */
+
+.hero-mobile-image{
+    display:none;
+}
+
+.hero-image-glow{
+    position:absolute;
+    width:420px;
+    height:420px;
+    right:-120px;
+    top:40px;
+    border-radius:50%;
+    background:
+        radial-gradient(
+            rgba(25,135,84,.45),
+            transparent 70%
+        );
+    filter:blur(70px);
+}
+
+.hero-image-badge{
+    position:absolute;
+    left:20px;
+    top:40px;
+    width:110px;
+    height:90px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    background:rgba(255,255,255,.8);
+    backdrop-filter:blur(30px) saturate(180%);
+    border:1px solid rgba(255,255,255,.4);
+
+    border-radius:22px;
+
+    box-shadow:
+        0 8px 32px rgba(0,0,0,.12),
+        inset 0 2px 4px rgba(255,255,255,.5);
+}
+
+.hero-image-badge strong{
+    font-size:1.5rem;
+    color:var(--primary-color);
+}
+
+.hero-image-badge span{
+    font-size:.8rem;
+    color:#777;
+}
+
+/* ==========================================================
+   MOBILE STATS
+========================================================== */
+
+.hero-mobile-stats{
+    display:none;
+}
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media(max-width:991px){
+
+.hero-section{
+
+padding:1.5rem 0 2rem;
+
+min-height:auto;
+
+}
+
+.hero-text-column{
+
+padding-right:0;
+
+position:relative;
+
+z-index:20;
+
+margin-bottom:2rem;
+
+}
+
+.hero-title{
+
+font-size:2.4rem;
+
+max-width:100%;
+
+line-height:1.1;
+
+margin-bottom:1rem;
+
+}
+
+.hero-subtitle{
+
+max-width:100%;
+
+font-size:0.95rem;
+
+margin-bottom:1.5rem;
+
+}
+
+.hero-buttons{
+
+flex-direction:row;
+
+align-items:center;
+
+gap:0.6rem;
+
+flex-wrap:wrap;
+
+}
+
+.hero-primary-btn{
+
+width:auto;
+
+padding:0.7rem 1.5rem;
+
+font-size:0.95rem;
+
+}
+
+.hero-secondary-btn{
+
+padding-left:.2rem;
+
+}
+
+.hero-image-column{
+
+display:none;
+
+}
+
+.hero-mobile-image{
+
+display:block;
+
+position:absolute;
+
+top:0;
+
+right:-80px;
+
+width:330px;
+
+height:520px;
+
+z-index:5;
+
+}
+
+.hero-mobile-image .hero-image-wrapper{
+
+position:absolute;
+
+right:0;
+
+top:0;
+
+width:320px;
+
+height:470px;
+
+box-shadow:
+
+0 40px 80px rgba(0,0,0,.18);
+
+clip-path:path("M180 0 C330 20 400 170 400 330 C400 520 250 640 120 610 C35 590 0 470 0 260 C0 80 70 0 180 0Z");
+
+}
+
+.hero-mobile-image .hero-image{
+
+border-radius:0;
+
+}
+
+.hero-stat-card{
+
+display:none;
+
+}
+
+.hero-mobile-stats{
+
+display:grid;
+
+grid-template-columns:repeat(4,1fr);
+
+gap:0.6rem;
+
+margin-top:1.5rem;
+
+padding:1rem 0.8rem;
+
+background:rgba(255,255,255,.75);
+
+backdrop-filter:blur(30px) saturate(180%);
+
+border:1px solid rgba(255,255,255,.3);
+
+border-radius:20px;
+
+box-shadow:
+
+0 8px 32px rgba(0,0,0,.1),
+inset 0 2px 4px rgba(255,255,255,.5);
+
+}
+
+.hero-mobile-stats .stat{
+
+text-align:center;
+
+}
+
+.hero-mobile-stats h3{
+
+color:var(--primary-color);
+
+font-size:1.2rem;
+
+margin-bottom:.2rem;
+
+}
+
+.hero-mobile-stats small{
+
+color:#777;
+
+}
+
+}
+
+/* ==========================================================
+   SMALL PHONES
+========================================================== */
+
+@media(max-width:576px){
+
+.hero-text-column{
+
+padding-right:0;
+
+}
+
+.hero-title{
+
+font-size:1.8rem;
+
+max-width:100%;
+
+line-height:1.15;
+
+background: rgba(255, 255, 255, 0.4);
+
+}
+
+.hero-subtitle{
+
+max-width:100%;
+
+font-size:0.9rem;
+
+line-height:1.6;
+
+background: rgba(255, 255, 255, 0.4);
+
+color: #070707;
+}
+
+.hero-buttons{
+
+flex-direction:row;
+
+gap:0.5rem;
+
+}
+
+.hero-primary-btn{
+
+padding:0.6rem 1.2rem;
+
+font-size:0.85rem;
+
+}
+
+.hero-secondary-btn{
+
+font-size:0.85rem;
+
+}
+
+.hero-mobile-image{
+
+right: -1px;
+
+width: 290px;
+
+top: 50px;
+
+}
+
+.hero-mobile-image .hero-image-wrapper{
+
+width: 290px;
+
+height:350px;
+
+}
+
+.hero-image-badge{
+
+width:75px;
+
+height:65px;
+
+left:-10px;
+
+top:20px;
+
+background:rgba(255,255,255,.85);
+
+backdrop-filter:blur(25px) saturate(180%);
+
+border:1px solid rgba(255,255,255,.4);
+
+box-shadow:
+
+0 8px 32px rgba(0,0,0,.1),
+inset 0 2px 4px rgba(255,255,255,.5);
+
+}
+
+.hero-image-badge strong{
+
+font-size:1.1rem;
+
+color:var(--primary-color);
+
+}
+
+.hero-image-badge span{
+
+font-size:0.7rem;
+
+color:#555;
+
+font-weight:500;
+
+}
+
+.hero-mobile-stats{
+
+display:grid;
+
+}
+
+}
+
+/* ==========================================================
+   ANIMATIONS
+========================================================== */
+
+@keyframes heroFloat{
+
+0%{
+
+transform:translateY(0);
+
+}
+
+50%{
+
+transform:translateY(-15px);
+
+}
+
+100%{
+
+transform:translateY(0);
+
+}
+
+}
+
+@keyframes cardFloat{
+
+0%{
+
+transform:translateY(0);
+
+}
+
+50%{
+
+transform:translateY(-10px);
+
+}
+
+100%{
+
+transform:translateY(0);
+
+}
+
+}
