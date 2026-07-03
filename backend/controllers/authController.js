@@ -7,6 +7,7 @@ async function register(req, res, next) {
     res.status(201).json({
       user: result.user,
       accessToken: result.accessToken,
+      token: result.accessToken,
       refreshToken: result.refreshToken,
       message: result.message,
       checkpoint: result.checkpoint,
@@ -20,7 +21,12 @@ async function login(req, res, next) {
   try {
     const { email, password, rememberMe } = req.body;
     const result = await authService.login({ email, password, rememberMe });
-    res.json({ user: result.user, accessToken: result.accessToken, refreshToken: result.refreshToken });
+    res.json({
+      user: result.user,
+      accessToken: result.accessToken,
+      token: result.accessToken,
+      refreshToken: result.refreshToken,
+    });
   } catch (err) {
     next(err);
   }
@@ -111,7 +117,7 @@ async function handleGoogleCallback(req, res, next) {
     );
     const redirectUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/auth/google/callback?accessToken=${encodeURIComponent(
       accessToken
-    )}&refreshToken=${encodeURIComponent(refreshToken)}&user=${encodedUser}`;
+    )}&token=${encodeURIComponent(accessToken)}&refreshToken=${encodeURIComponent(refreshToken)}&user=${encodedUser}`;
 
     res.redirect(redirectUrl);
   } catch (err) {

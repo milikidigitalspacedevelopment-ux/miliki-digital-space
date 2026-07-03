@@ -33,50 +33,12 @@ function CampaignsPage() {
       setLoading(true);
 
       const response = await campaignService.getCampaigns();
+      const payload = Array.isArray(response) ? response : response?.data || response?.campaigns || [];
 
-      setCampaigns(Array.isArray(response) ? response : response?.data || []);
-    } catch {
-      setCampaigns([
-        {
-          id: 1,
-          title: "Digital Skills For Youth",
-          category: "Technology",
-          image:
-            "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
-          description:
-            "Providing digital skills training to underserved youth.",
-          raisedAmount: 36500,
-          goalAmount: 50000,
-          donorsCount: 120,
-          daysLeft: 25,
-        },
-        {
-          id: 2,
-          title: "Women Entrepreneurship",
-          category: "Women Empowerment",
-          image:
-            "https://images.unsplash.com/photo-1521791136064-7986c2920216",
-          description:
-            "Supporting women-owned businesses and startups.",
-          raisedAmount: 22000,
-          goalAmount: 40000,
-          donorsCount: 84,
-          daysLeft: 19,
-        },
-        {
-          id: 3,
-          title: "Agriculture For Communities",
-          category: "Agriculture",
-          image:
-            "https://images.unsplash.com/photo-1500937386664-56d1dfef3854",
-          description:
-            "Building sustainable food systems and empowering farmers.",
-          raisedAmount: 12000,
-          goalAmount: 30000,
-          donorsCount: 60,
-          daysLeft: 30,
-        },
-      ]);
+      setCampaigns(payload);
+    } catch (error) {
+      console.error(error);
+      setCampaigns([]);
     } finally {
       setLoading(false);
     }
@@ -155,13 +117,13 @@ function CampaignsPage() {
 
                   <div className="d-flex justify-content-between mb-2">
                     <strong>
-                      $
-                      {featuredCampaign.raisedAmount.toLocaleString()}
+                      KSh
+                      {Number(featuredCampaign.raised_amount || featuredCampaign.raisedAmount || 0).toLocaleString()}
                     </strong>
 
                     <strong>
-                      Goal: $
-                      {featuredCampaign.goalAmount.toLocaleString()}
+                      Goal: KSh
+                      {Number(featuredCampaign.goal_amount || featuredCampaign.goalAmount || 0).toLocaleString()}
                     </strong>
                   </div>
 
@@ -176,9 +138,8 @@ function CampaignsPage() {
                       className="progress-bar bg-success"
                       style={{
                         width: `${
-                          (featuredCampaign.raisedAmount /
-                            featuredCampaign.goalAmount) *
-                          100
+                          ((Number(featuredCampaign.raised_amount || featuredCampaign.raisedAmount || 0) /
+                            Math.max(Number(featuredCampaign.goal_amount || featuredCampaign.goalAmount || 1), 1)) * 100)
                         }%`,
                       }}
                     />
@@ -186,9 +147,8 @@ function CampaignsPage() {
 
                   <div className="mt-3 text-success fw-bold">
                     {Math.round(
-                      (featuredCampaign.raisedAmount /
-                        featuredCampaign.goalAmount) *
-                        100
+                      (Number(featuredCampaign.raised_amount || featuredCampaign.raisedAmount || 0) /
+                        Math.max(Number(featuredCampaign.goal_amount || featuredCampaign.goalAmount || 1), 1)) * 100
                     )}
                     % funded
                   </div>

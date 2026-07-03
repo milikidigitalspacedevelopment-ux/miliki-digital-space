@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import heroImage from "../../assets/hero.png";
+import api from "../../services/api";
 
 // Section bundle (clean import from index.js)
 import {
@@ -21,43 +23,65 @@ import FloatingCTASection from "../../components/sections/FloatingCTASection";
 import WhyChooseUsSection from "../../components/sections/WhyChooseUsSection";
 import TeamSection from "../../components/sections/TeamSection";
 import TimelineSection from "../../components/sections/TimelineSection";
+import StatsSection from "../../components/sections/StatsSection";
+import analyticsService from "../../services/analyticsService";
 
 function HomePage() {
-  console.log("[dev] HomePage render");
+  const [stats, setStats] = useState([]);
+  const [heroContent, setHeroContent] = useState(null);
 
-  const stats = [
-    {
-      value: "500+",
-      label: "Youth Empowered",
-    },
-    {
-      value: "40+",
-      label: "Professional Courses",
-    },
-    {
-      value: "25+",
-      label: "Strategic Partners",
-    },
-    {
-      value: "100+",
-      label: "Volunteers",
-    },
-  ];
+  useEffect(() => {
+    let active = true;
+
+    const loadStats = async () => {
+      try {
+        const [dashboard, content] = await Promise.all([
+          analyticsService.getDashboardStats().catch(() => null),
+          api.get("/content/home").then((res) => res.data).catch(() => null),
+        ]);
+
+        if (!active) return;
+
+        if (Array.isArray(dashboard?.stats)) {
+          setStats(
+            dashboard.stats.map((item) => ({
+              value: item.value || item.count || item.total || "0",
+              label: item.title || "Metric",
+            }))
+          );
+        }
+
+        if (content?.hero) {
+          setHeroContent(content.hero);
+        }
+      } catch (error) {
+        console.error("Failed to load home page data", error);
+      }
+    };
+
+    loadStats();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <>
       <HeroSection
-        title="Transforming Lives Through Skills Development"
-        subtitle="Empowering youth and women through education, mentorship, entrepreneurship and opportunities."
+        title={heroContent?.title || "Transforming Lives Through Skills Development"}
+        subtitle={heroContent?.subtitle || "Empowering youth and women through education, mentorship, entrepreneurship and opportunities."}
         image={heroImage}
-        primaryText="Join Us"
+        primaryText={heroContent?.primaryText || "Join Us"}
         primaryLink="/register"
-        secondaryText="Explore Programs"
+        secondaryText={heroContent?.secondaryText || "Explore Programs"}
         secondaryLink="/programs"
       />
       <FeaturesSection />
 
       <WhyChooseUsSection />
+
+      {stats.length > 0 && <StatsSection stats={stats} />}
 
       <ProgramsSection />
 

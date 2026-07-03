@@ -22,27 +22,18 @@ function BlogPage() {
   const loadBlogs = async () => {
     try {
       const response = await blogService.getBlogs();
-      setBlogs(response.data || []);
-    } catch {
-      setBlogs([
-        {
-          id: 1,
-          title: "Empowering Youth Through Digital Skills",
-          category: "Technology",
-        },
-        {
-          id: 2,
-          title: "Success Stories From Our Community",
-          category: "Stories",
-        },
-      ]);
+      const payload = Array.isArray(response) ? response : response?.data || response?.blogs || [];
+      setBlogs(payload);
+    } catch (error) {
+      console.error(error);
+      setBlogs([]);
     } finally {
       setLoading(false);
     }
   };
 
   const filteredBlogs = blogs.filter((blog) =>
-    blog.title.toLowerCase().includes(search.toLowerCase())
+    (blog.title || "").toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -81,7 +72,7 @@ function BlogPage() {
 
                 <div className="mt-3">
                   <Link
-                    to={`/blog/${blog.id}`}
+                    to={`/blogs/${blog.id || blog.slug}`}
                     className="btn btn-primary rounded-pill"
                   >
                     Read Article

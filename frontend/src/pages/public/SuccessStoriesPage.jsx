@@ -75,42 +75,12 @@ function SuccessStoriesPage() {
       const response =
         await analyticsService.getSuccessStories();
 
-      setStories(response.data);
+      const payload = Array.isArray(response?.data) ? response.data : response?.data?.stories || [];
+      setStories(payload);
 
-    } catch {
-
-      setStories([
-        {
-          id: 1,
-          category: "Technology",
-          title: "Digital Skills Opened New Doors",
-          excerpt:
-            "Training helped me secure employment and support my family.",
-          image:
-            "https://images.unsplash.com/photo-1494790108377-be9c29b29330"
-        },
-
-        {
-          id: 2,
-          category: "Women",
-          title: "From Dream To Business Owner",
-          excerpt:
-            "Mentorship and funding transformed my idea into reality.",
-          image:
-            "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df"
-        },
-
-        {
-          id: 3,
-          category: "Youth",
-          title: "Youth Innovation Changed Our Community",
-          excerpt:
-            "Young people came together and built solutions for local challenges.",
-          image:
-            "https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
-        }
-      ]);
-
+    } catch (error) {
+      console.error(error);
+      setStories([]);
     }
 
   };

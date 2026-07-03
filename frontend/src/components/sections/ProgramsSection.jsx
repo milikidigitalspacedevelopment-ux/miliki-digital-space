@@ -13,7 +13,7 @@ function ProgramsSection() {
   const fetchPrograms = async () => {
     try {
       const data = await programService.getPrograms();
-      setPrograms(Array.isArray(data) ? data : data?.data || []);
+      setPrograms(Array.isArray(data) ? data : data?.data || data?.programs || []);
     } catch (error) {
       console.error(error);
     }
@@ -28,19 +28,12 @@ function ProgramsSection() {
           Featured Programs
         </h2>
 
-        <div className="row">
-
+        <div className="program-grid">
           {programs.map((program) => (
-            <div
-              key={program.id}
-              className="col-lg-4 mb-4"
-            >
-              <ProgramCard
-                program={program}
-              />
+            <div className="program-card-wrapper" key={program.id}>
+              <ProgramCard program={program} />
             </div>
           ))}
-
         </div>
 
       </div>

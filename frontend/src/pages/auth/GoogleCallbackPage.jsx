@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
-import redirectByRole from "../../utils/redirectByRole";
 
 function GoogleCallbackPage() {
   const navigate = useNavigate();
@@ -27,7 +26,7 @@ function GoogleCallbackPage() {
       loginStore({ user, token: accessToken });
       localStorage.setItem("refreshToken", refreshToken);
 
-      navigate(redirectByRole(user.role));
+      navigate("/", { replace: true });
     } catch (err) {
       console.error(err);
       setError("Unable to process Google login response.");

@@ -22,22 +22,11 @@ function EventsPage() {
   const loadEvents = async () => {
     try {
       const response = await eventService.getEvents();
-      setEvents(Array.isArray(response) ? response : response?.data || []);
-    } catch {
-      setEvents([
-        {
-          id: 1,
-          title: "Youth Empowerment Workshop",
-          date: "August 15, 2026",
-          location: "Nairobi",
-        },
-        {
-          id: 2,
-          title: "Digital Skills Bootcamp",
-          date: "September 5, 2026",
-          location: "Kisumu",
-        },
-      ]);
+      const payload = Array.isArray(response) ? response : response?.data || response?.events || [];
+      setEvents(payload);
+    } catch (error) {
+      console.error(error);
+      setEvents([]);
     } finally {
       setLoading(false);
     }

@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import api from "../../services/api";
 import {
   Heart,
   GraduationCap,
@@ -14,65 +16,73 @@ import DonationForm from "../../components/forms/DonationForm";
 import StatsSection from "../../components/sections/StatsSection";
 import FAQSection from "../../components/sections/FAQSection";
 import CTASection from "../../components/sections/CTASection";
+import analyticsService from "../../services/analyticsService";
 
 function DonatePage() {
-  const causes = [
-    {
-      title: "Education",
-      description:
-        "Provide training materials, scholarships, and learning opportunities.",
-      icon: <GraduationCap size={40} />,
-      color: "primary",
-    },
-    {
-      title: "Technology",
-      description:
-        "Equip youth with digital skills and access to modern tools.",
-      icon: <Laptop size={40} />,
-      color: "success",
-    },
-    {
-      title: "Agriculture",
-      description:
-        "Support sustainable farming and food security initiatives.",
-      icon: <Sprout size={40} />,
-      color: "warning",
-    },
-    {
-      title: "Entrepreneurship",
-      description:
-        "Help young people start businesses and become self-reliant.",
-      icon: <Briefcase size={40} />,
-      color: "danger",
-    },
+  const [causes, setCauses] = useState([]);
+  const [reasons, setReasons] = useState([]);
+  const [stats, setStats] = useState([]);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadStats = async () => {
+      try {
+        const [dashboard, payload] = await Promise.all([
+          analyticsService.getDashboardStats().catch(() => null),
+          api.get("/content/donate").then((res) => res.data).catch(() => null),
+        ]);
+
+        if (!active) return;
+
+        if (Array.isArray(dashboard?.stats)) {
+          setStats(
+            dashboard.stats.map((item) => ({
+              value: item.value || item.count || item.total || "0",
+              label: item.title || "Metric",
+            }))
+          );
+        }
+
+        if (payload?.causes) {
+          setCauses(payload.causes.map((cause) => ({ ...cause, icon: iconByName(cause.icon) })));
+        }
+
+        if (payload?.reasons) {
+          setReasons(payload.reasons.map((reason) => ({ ...reason, icon: iconByName(reason.icon) })));
+        }
+      } catch (error) {
+        console.error("Failed to load donation page data", error);
+      }
+    };
+
+    loadStats();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const impactHighlights = [
+    { value: stats[0]?.value || "0", label: "Community members reached" },
+    { value: stats[1]?.value || "0", label: "Programs delivered" },
+    { value: stats[2]?.value || "0", label: "Courses offered" },
+    { value: stats[3]?.value || "0", label: "Donations received" },
   ];
 
-  const reasons = [
-    {
-      title: "Transparency",
-      description:
-        "Every contribution is tracked and impact reports are shared with donors.",
-      icon: <ShieldCheck size={38} />,
-    },
-    {
-      title: "Community Impact",
-      description:
-        "Your support creates opportunities and transforms lives.",
-      icon: <Heart size={38} />,
-    },
-    {
-      title: "Sustainability",
-      description:
-        "We focus on long-term solutions that empower communities.",
-      icon: <Globe size={38} />,
-    },
-    {
-      title: "Accountability",
-      description:
-        "Donors receive updates, receipts, and measurable outcomes.",
-      icon: <HandCoins size={38} />,
-    },
-  ];
+  const iconByName = (name) => {
+    const icons = {
+      GraduationCap: <GraduationCap size={40} />,
+      Laptop: <Laptop size={40} />,
+      Sprout: <Sprout size={40} />,
+      Briefcase: <Briefcase size={40} />,
+      ShieldCheck: <ShieldCheck size={38} />,
+      Heart: <Heart size={38} />,
+      Globe: <Globe size={38} />,
+      HandCoins: <HandCoins size={38} />,
+    };
+    return icons[name] || <Heart size={38} />;
+  };
 
   return (
     <>
@@ -82,7 +92,7 @@ function DonatePage() {
       />
 
       {/* Impact Stats */}
-      <StatsSection />
+      <StatsSection stats={stats} />
 
       {/* Causes */}
       <section className="container py-5">
@@ -284,51 +294,18 @@ function DonatePage() {
           </div>
 
           <div className="row g-4">
-
-            <div className="col-md-3">
-              <div className="card border-0 shadow-sm h-100 rounded-5 p-4 text-center">
-                <h1 className="text-primary fw-bold">
-                  1200+
-                </h1>
-                <p className="text-muted mb-0">
-                  Youth Trained
-                </p>
+            {impactHighlights.map((item, index) => (
+              <div className="col-md-3" key={item.label}>
+                <div className="card border-0 shadow-sm h-100 rounded-5 p-4 text-center">
+                  <h1 className={`fw-bold ${index === 0 ? "text-primary" : index === 1 ? "text-success" : index === 2 ? "text-warning" : "text-danger"}`}>
+                    {item.value}
+                  </h1>
+                  <p className="text-muted mb-0">
+                    {item.label}
+                  </p>
+                </div>
               </div>
-            </div>
-
-            <div className="col-md-3">
-              <div className="card border-0 shadow-sm h-100 rounded-5 p-4 text-center">
-                <h1 className="text-success fw-bold">
-                  350+
-                </h1>
-                <p className="text-muted mb-0">
-                  Businesses Started
-                </p>
-              </div>
-            </div>
-
-            <div className="col-md-3">
-              <div className="card border-0 shadow-sm h-100 rounded-5 p-4 text-center">
-                <h1 className="text-warning fw-bold">
-                  85%
-                </h1>
-                <p className="text-muted mb-0">
-                  Employment Success
-                </p>
-              </div>
-            </div>
-
-            <div className="col-md-3">
-              <div className="card border-0 shadow-sm h-100 rounded-5 p-4 text-center">
-                <h1 className="text-danger fw-bold">
-                  20+
-                </h1>
-                <p className="text-muted mb-0">
-                  Communities Reached
-                </p>
-              </div>
-            </div>
-
+            ))}
           </div>
 
         </div>

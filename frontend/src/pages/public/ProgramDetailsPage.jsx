@@ -7,11 +7,13 @@ import CourseCard from "../../components/cards/CourseCard";
 import CTASection from "../../components/sections/CTASection";
 
 import programService from "../../services/programService";
+import courseService from "../../services/courseService";
 
 function ProgramDetailsPage() {
   const { id } = useParams();
 
   const [program, setProgram] = useState(null);
+  const [relatedCourses, setRelatedCourses] = useState([]);
 
   useEffect(() => {
     loadProgram();
@@ -22,43 +24,34 @@ function ProgramDetailsPage() {
       const response = await programService.getProgramById(id);
       const programData = response?.data ?? response;
 
-      setProgram({
+      const normalizedProgram = {
         ...programData,
-        objectives: programData?.objectives || [
-          "Skill development",
-          "Community impact",
-          "Mentorship",
-        ],
-        benefits: programData?.benefits || [
-          "Practical training",
-          "Networking",
-          "Certification",
-        ],
-        duration: programData?.duration || "Flexible",
-        students: programData?.students || 0,
-        startDate: programData?.startDate || "Coming soon",
+        title: programData?.title || "Untitled program",
+        image: programData?.image || "/images/program.jpg",
+        description: programData?.description || programData?.overview || "",
+        objectives: Array.isArray(programData?.objectives) ? programData.objectives : [],
+        benefits: Array.isArray(programData?.benefits) ? programData.benefits : [],
+        duration: programData?.duration || programData?.duration_hours || "",
+        category: programData?.category || programData?.category_name || "",
+        students: programData?.students || programData?.participants || 0,
+        startDate: programData?.startDate || programData?.start_date || "",
+      };
+
+      setProgram(normalizedProgram);
+
+      const related = await courseService.getCourses({
+        category: normalizedProgram.category,
+        status: "Published",
       });
-    } catch {
-      setProgram({
-        title: "Digital Skills Program",
-        image: "/images/program.jpg",
-        description:
-          "A practical program designed to equip youth with modern digital skills.",
-        objectives: [
-          "Web Development",
-          "Graphic Design",
-          "Digital Literacy"
-        ],
-        benefits: [
-          "Certification",
-          "Mentorship",
-          "Hands-on Projects"
-        ],
-        duration: "6 Months",
-        category: "Technology",
-        students: 320,
-        startDate: "July 2026"
-      });
+
+      const relatedPayload = Array.isArray(related) ? related : related?.data || [];
+
+      setRelatedCourses(
+        relatedPayload.filter((item) => item.id !== normalizedProgram.id).slice(0, 4)
+      );
+    } catch (error) {
+      console.error(error);
+      setProgram(null);
     }
   };
 
@@ -140,25 +133,52 @@ function ProgramDetailsPage() {
 
             </div>
 
-            <div className="mt-5">
+            {program.objectives.length > 0 && (
+              <div className="mt-5">
+                <h3 className="fw-bold mb-4">Program Objectives</h3>
 
-              <h3 className="fw-bold mb-4">
-                Related Courses
-              </h3>
-
-              <div className="row g-4">
-
-                {[1, 2].map((course) => (
-                  <div
-                    key={course}
-                    className="col-md-6"
-                  >
-                    <CourseCard />
-                  </div>
-                ))}
-
+                <div className="row g-3">
+                  {program.objectives.map((item) => (
+                    <div className="col-md-6" key={item}>
+                      <div className="shadow-sm p-4 rounded-5 bg-white">
+                        ✓ {item}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
+            )}
 
+            {program.benefits.length > 0 && (
+              <div className="mt-5">
+                <h3 className="fw-bold mb-4">Benefits</h3>
+
+                <div className="row g-3">
+                  {program.benefits.map((item) => (
+                    <div className="col-md-6" key={item}>
+                      <div className="shadow-sm p-4 rounded-5 bg-light">
+                        {item}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-5">
+              <h3 className="fw-bold mb-4">Related Courses</h3>
+
+              {relatedCourses.length === 0 ? (
+                <p className="text-muted">There are no related courses available right now.</p>
+              ) : (
+                <div className="course-grid">
+                  {relatedCourses.map((course) => (
+                    <div className="course-card-wrapper" key={course.id}>
+                      <CourseCard course={course} />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
           </div>

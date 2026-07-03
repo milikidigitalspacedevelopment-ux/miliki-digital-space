@@ -1,5 +1,3 @@
-// src/pages/admin/ProgramsPage.jsx
-
 import { useEffect, useMemo, useState } from "react";
 import {
   GraduationCap,
@@ -46,27 +44,48 @@ function ProgramsPage() {
   }, []);
 
   // Derived lists
+  const getProgramStatus = (program) =>
+    program.status ||
+    (program.featured ? "Active" : "Draft") ||
+    "Unknown";
+
+  const getProgramCategory = (program) =>
+    program.category || program.category_name || "Uncategorized";
+
+  const getProgramDuration = (program) =>
+    program.duration || program.duration_hours || "-";
+
+  const getProgramParticipants = (program) =>
+    program.participants || program.enrollments || 0;
+
   const categories = useMemo(() => {
-    const set = new Set(programs.map((p) => p.category).filter(Boolean));
+    const set = new Set(
+      programs
+        .map((p) => getProgramCategory(p))
+        .filter(Boolean)
+    );
     return ["", ...Array.from(set)];
   }, [programs]);
 
   const statuses = useMemo(() => {
-    const set = new Set(programs.map((p) => p.status).filter(Boolean));
+    const set = new Set(programs.map((p) => getProgramStatus(p)).filter(Boolean));
     return ["", ...Array.from(set)];
   }, [programs]);
 
   const filteredPrograms = useMemo(() => {
     return programs
       .filter((program) => {
-        if (statusFilter && program.status !== statusFilter) return false;
-        if (categoryFilter && program.category !== categoryFilter) return false;
+        const status = getProgramStatus(program);
+        const category = getProgramCategory(program);
+
+        if (statusFilter && status !== statusFilter) return false;
+        if (categoryFilter && category !== categoryFilter) return false;
         if (!searchTerm) return true;
 
         const q = searchTerm.toLowerCase();
         return (
           (program.title || "").toLowerCase().includes(q) ||
-          (program.category || "").toLowerCase().includes(q) ||
+          category.toLowerCase().includes(q) ||
           String(program.id).includes(q)
         );
       })
@@ -314,20 +333,20 @@ function ProgramsPage() {
               {!loading && paged.map((program) => (
                 <tr key={program.id}>
                   <td className="fw-semibold">{program.title}</td>
-                  <td>{program.category}</td>
-                  <td>{program.participants?.toLocaleString() || 0}</td>
-                  <td>{program.duration || "-"}</td>
+                  <td>{getProgramCategory(program)}</td>
+                  <td>{getProgramParticipants(program).toLocaleString()}</td>
+                  <td>{getProgramDuration(program)}</td>
                   <td>
                     <span
                       className={`badge ${
-                        program.status === "Active"
+                        getProgramStatus(program) === "Active"
                           ? "bg-success"
-                          : program.status === "Completed"
+                          : getProgramStatus(program) === "Completed"
                           ? "bg-primary"
                           : "bg-warning"
                       }`}
                     >
-                      {program.status}
+                      {getProgramStatus(program)}
                     </span>
                   </td>
                   <td>

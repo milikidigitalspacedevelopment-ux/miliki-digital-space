@@ -57,7 +57,7 @@ function DashboardLayoutShell({
 
         <DashboardNavbar title={title} onToggleSidebar={toggleSidebar} />
 
-        <main className="flex-grow-1 bg-light" style={{ padding: "1rem", overflowY: "auto", overflowX: "hidden" }}>
+        <main className="flex-grow-1" style={{ padding: "1rem", overflowY: "auto", overflowX: "hidden", background: "linear-gradient(135deg, #f8fff4 0%, #e9fbe7 100%)" }}>
 
           <Outlet />
 

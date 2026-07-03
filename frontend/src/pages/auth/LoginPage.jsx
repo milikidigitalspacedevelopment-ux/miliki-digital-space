@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import authService from "../../services/authService";
 import useAuthStore from "../../store/authStore";
-import redirectByRole from "../../utils/redirectByRole";
+import useAuth from "../../hooks/useAuth";
 import { ENV } from "../../configs/environment";
 import "../../styles/auth.css";
 
@@ -11,6 +11,7 @@ function LoginPage() {
   const navigate = useNavigate();
 
   const loginStore = useAuthStore((state) => state.login);
+  const { login: loginContext } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -51,21 +52,28 @@ function LoginPage() {
       });
 
       const authData = response?.data || response;
-        const { user, accessToken, refreshToken } = authData;
+      const user = authData?.user;
+      const accessToken = authData?.accessToken || authData?.token;
+      const refreshToken = authData?.refreshToken;
 
-        loginStore({ user, token: accessToken, rememberMe: formData.rememberMe });
+      if (!user || !accessToken) {
+        throw new Error("Authentication response was invalid.");
+      }
 
-        try {
-          if (formData.rememberMe) {
-            localStorage.setItem("refreshToken", refreshToken);
-          } else {
-            sessionStorage.setItem("refreshToken", refreshToken);
-          }
-        } catch (err) {
-          // ignore storage errors
+      loginStore({ user, token: accessToken, rememberMe: formData.rememberMe });
+      loginContext({ user, token: accessToken, rememberMe: formData.rememberMe });
+
+      try {
+        if (formData.rememberMe) {
+          localStorage.setItem("refreshToken", refreshToken);
+        } else {
+          sessionStorage.setItem("refreshToken", refreshToken);
         }
+      } catch (err) {
+        // ignore storage errors
+      }
 
-      navigate(redirectByRole(user.role));
+      navigate("/", { replace: true });
     } catch (err) {
       setError(
         err?.response?.data?.message ||
@@ -81,7 +89,7 @@ function LoginPage() {
       <div className="row g-0 align-items-stretch w-100">
         <div className="col-lg-6 d-none d-lg-flex auth-hero-panel">
           <div className="auth-hero-content">
-            <img src="/logo.png" alt="Miliki hero" className="auth-hero-image" />
+            <img src="/auth-logo.png" alt="Miliki hero" className="auth-hero-image" />
             <h3>Welcome back to Miliki</h3>
             <p className="text-muted mb-4">
               Sign in to continue managing your learning, donations, and volunteer activities.
@@ -152,15 +160,18 @@ function LoginPage() {
               </div>
 
               <div className="d-flex justify-content-between align-items-center mb-4">
-                <div className="form-check">
+                <div className="form-check d-flex align-items-center gap-2">
                   <input
+                    id="rememberMe"
                     className="form-check-input"
                     type="checkbox"
                     name="rememberMe"
                     checked={formData.rememberMe}
                     onChange={handleChange}
                   />
-                  <label className="form-check-label">Remember Me</label>
+                  <label className="form-check-label user-select-none" htmlFor="rememberMe">
+                    Remember Me
+                  </label>
                 </div>
                 <Link to="/forgot-password">Forgot Password?</Link>
               </div>

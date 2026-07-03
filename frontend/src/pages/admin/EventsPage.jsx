@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   CalendarDays,
   Plus,
@@ -11,50 +11,39 @@ import {
   Users,
   Clock,
 } from "lucide-react";
+import eventService from "../../services/eventService";
 
 function EventsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const events = [
-    {
-      id: 1,
-      title: "Digital Skills Bootcamp",
-      venue: "Nairobi Innovation Hub",
-      date: "2026-08-15",
-      participants: 180,
-      status: "Upcoming",
-    },
-    {
-      id: 2,
-      title: "Women Leadership Summit",
-      venue: "Kisumu Conference Centre",
-      date: "2026-07-28",
-      participants: 320,
-      status: "Ongoing",
-    },
-    {
-      id: 3,
-      title: "Youth Entrepreneurship Workshop",
-      venue: "Mombasa Training Centre",
-      date: "2026-06-10",
-      participants: 140,
-      status: "Completed",
-    },
-    {
-      id: 4,
-      title: "Community Outreach Program",
-      venue: "Nakuru Community Hall",
-      date: "2026-09-05",
-      participants: 220,
-      status: "Upcoming",
-    },
-  ];
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        setLoading(true);
+        const data = await eventService.getEvents();
+        setEvents(Array.isArray(data) ? data : data?.data || []);
+      } catch (err) {
+        console.error(err);
+        setError("Unable to load events.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredEvents = events.filter(
-    (event) =>
-      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.venue.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    loadEvents();
+  }, []);
+
+  const filteredEvents = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    return events.filter((event) => {
+      const title = (event.title || "").toLowerCase();
+      const venue = (event.location || event.venue || "").toLowerCase();
+      return title.includes(term) || venue.includes(term);
+    });
+  }, [events, searchTerm]);
 
   return (
     <div className="container-fluid py-4">
@@ -104,7 +93,7 @@ function EventsPage() {
                   </small>
 
                   <h3 className="fw-bold mb-0">
-                    48
+                    {events.length}
                   </h3>
                 </div>
 
@@ -135,7 +124,7 @@ function EventsPage() {
                   </small>
 
                   <h3 className="fw-bold mb-0">
-                    14
+                    {events.filter((event) => (event.status || "").toLowerCase() === "upcoming").length}
                   </h3>
                 </div>
 
@@ -166,7 +155,7 @@ function EventsPage() {
                   </small>
 
                   <h3 className="fw-bold mb-0">
-                    3
+                    {events.filter((event) => (event.status || "").toLowerCase() === "ongoing").length}
                   </h3>
                 </div>
 
@@ -197,7 +186,7 @@ function EventsPage() {
                   </small>
 
                   <h3 className="fw-bold mb-0">
-                    5,860
+                    {events.reduce((sum, event) => sum + Number(event.participants || 0), 0).toLocaleString()}
                   </h3>
                 </div>
 
@@ -280,7 +269,19 @@ function EventsPage() {
 
             <tbody>
 
-              {filteredEvents.map((event) => (
+              {loading && (
+                <tr>
+                  <td colSpan="6" className="text-center py-4">Loading events...</td>
+                </tr>
+              )}
+
+              {!loading && error && (
+                <tr>
+                  <td colSpan="6" className="text-center py-4 text-danger">{error}</td>
+                </tr>
+              )}
+
+              {!loading && !error && filteredEvents.map((event) => (
                 <tr key={event.id}>
 
                   <td className="fw-semibold">
@@ -292,29 +293,29 @@ function EventsPage() {
                       size={15}
                       className="me-1"
                     />
-                    {event.venue}
+                    {event.location || event.venue || "—"}
                   </td>
 
                   <td>
-                    {event.date}
+                    {event.event_date || event.date || "—"}
                   </td>
 
                   <td>
-                    {event.participants}
+                    {event.participants || 0}
                   </td>
 
                   <td>
 
                     <span
                       className={`badge ${
-                        event.status === "Upcoming"
+                        (event.status || "").toLowerCase() === "upcoming"
                           ? "bg-success"
                           : event.status === "Ongoing"
                           ? "bg-warning text-dark"
                           : "bg-secondary"
                       }`}
                     >
-                      {event.status}
+                      {event.status || "Upcoming"}
                     </span>
 
                   </td>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   HeartHandshake,
   DollarSign,
@@ -11,51 +11,35 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
+import campaignService from "../../services/campaignService";
 
 function CampaignsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const campaigns = [
-    {
-      id: 1,
-      title: "Empower 1,000 Women",
-      goal: 500000,
-      raised: 365000,
-      donors: 248,
-      status: "Active",
-    },
-    {
-      id: 2,
-      title: "Youth Digital Skills Initiative",
-      goal: 300000,
-      raised: 300000,
-      donors: 192,
-      status: "Completed",
-    },
-    {
-      id: 3,
-      title: "Community Innovation Hub",
-      goal: 800000,
-      raised: 220000,
-      donors: 94,
-      status: "Active",
-    },
-    {
-      id: 4,
-      title: "Scholarship Program",
-      goal: 450000,
-      raised: 0,
-      donors: 0,
-      status: "Draft",
-    },
-  ];
+  useEffect(() => {
+    const loadCampaigns = async () => {
+      try {
+        setLoading(true);
+        const data = await campaignService.getCampaigns();
+        setCampaigns(Array.isArray(data) ? data : data?.data || []);
+      } catch (err) {
+        console.error(err);
+        setError("Unable to load campaigns.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredCampaigns = campaigns.filter(
-    (campaign) =>
-      campaign.title
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-  );
+    loadCampaigns();
+  }, []);
+
+  const filteredCampaigns = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    return campaigns.filter((campaign) => (campaign.title || "").toLowerCase().includes(term));
+  }, [campaigns, searchTerm]);
 
   return (
     <div className="container-fluid py-4">
@@ -102,7 +86,7 @@ function CampaignsPage() {
                   </small>
 
                   <h3 className="fw-bold mb-0">
-                    24
+                    {campaigns.length}
                   </h3>
                 </div>
               </div>
@@ -127,7 +111,7 @@ function CampaignsPage() {
                   </small>
 
                   <h3 className="fw-bold mb-0">
-                    KSh 4.8M
+                    KSh {campaigns.reduce((sum, campaign) => sum + Number(campaign.raised_amount || campaign.raisedAmount || 0), 0).toLocaleString()}
                   </h3>
                 </div>
               </div>
@@ -152,7 +136,7 @@ function CampaignsPage() {
                   </small>
 
                   <h3 className="fw-bold mb-0">
-                    8
+                    {campaigns.filter((campaign) => (campaign.status || "").toLowerCase() === "active").length}
                   </h3>
                 </div>
               </div>
@@ -177,7 +161,7 @@ function CampaignsPage() {
                   </small>
 
                   <h3 className="fw-bold mb-0">
-                    1,284
+                    {campaigns.reduce((sum, campaign) => sum + Number(campaign.donorsCount || campaign.donors || 0), 0).toLocaleString()}
                   </h3>
                 </div>
               </div>
@@ -253,9 +237,22 @@ function CampaignsPage() {
 
             <tbody>
 
-              {filteredCampaigns.map((campaign) => {
-                const percentage =
-                  (campaign.raised / campaign.goal) * 100;
+              {loading && (
+                <tr>
+                  <td colSpan="7" className="text-center py-4">Loading campaigns...</td>
+                </tr>
+              )}
+
+              {!loading && error && (
+                <tr>
+                  <td colSpan="7" className="text-center py-4 text-danger">{error}</td>
+                </tr>
+              )}
+
+              {!loading && !error && filteredCampaigns.map((campaign) => {
+                const raised = Number(campaign.raised_amount || campaign.raisedAmount || 0);
+                const goal = Number(campaign.goal_amount || campaign.goalAmount || 1);
+                const percentage = (raised / goal) * 100;
 
                 return (
                   <tr key={campaign.id}>
@@ -265,11 +262,11 @@ function CampaignsPage() {
                     </td>
 
                     <td>
-                      KSh {campaign.goal.toLocaleString()}
+                      KSh {goal.toLocaleString()}
                     </td>
 
                     <td>
-                      KSh {campaign.raised.toLocaleString()}
+                      KSh {raised.toLocaleString()}
                     </td>
 
                     <td style={{ minWidth: "170px" }}>
@@ -292,21 +289,21 @@ function CampaignsPage() {
                     </td>
 
                     <td>
-                      {campaign.donors}
+                      {campaign.donorsCount || campaign.donors || 0}
                     </td>
 
                     <td>
 
                       <span
                         className={`badge ${
-                          campaign.status === "Active"
+                          (campaign.status || "").toLowerCase() === "active"
                             ? "bg-success"
                             : campaign.status === "Completed"
                             ? "bg-primary"
                             : "bg-warning text-dark"
                         }`}
                       >
-                        {campaign.status}
+                        {campaign.status || "Draft"}
                       </span>
 
                     </td>

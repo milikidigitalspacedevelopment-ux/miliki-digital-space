@@ -43,7 +43,7 @@ function MobileMenu({ open, setOpen }) {
   }, []);
 
   // Define which links live where. Home must be only at bottom per request.
-  const bottomKeys = ["/", "/programs", "/courses", "/blog", "/contact"];
+  const bottomKeys = ["/", "/programs", "/courses", "/blogs", "/contact"];
   const bottomLinks = links.filter((l) => bottomKeys.includes(l.path));
   const sidebarLinks = links.filter((l) => !bottomKeys.includes(l.path));
 
@@ -87,7 +87,7 @@ function MobileMenu({ open, setOpen }) {
                     return Book;
                   case "/events":
                     return Calendar;
-                  case "/blog":
+                  case "/blogs":
                     return Newspaper;
                   case "/impact":
                     return Heart;
@@ -130,7 +130,7 @@ function MobileMenu({ open, setOpen }) {
                   return Briefcase;
                 case "/courses":
                   return Book;
-                case "/blog":
+                case "/blogs":
                   return Newspaper;
                 case "/contact":
                   return Telephone;

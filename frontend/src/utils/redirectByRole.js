@@ -1,9 +1,9 @@
 import { ROLES } from "../constants/roles";
 
-export default function redirectByRole(
-  role
-) {
-  switch (role) {
+export function getDashboardPathByRole(role) {
+  const normalizedRole = `${role || ""}`.toString().toLowerCase();
+
+  switch (normalizedRole) {
     case ROLES.STUDENT:
       return "/student";
 
@@ -23,9 +23,14 @@ export default function redirectByRole(
       return "/admin";
 
     case ROLES.SUPER_ADMIN:
+    case "superadmin":
       return "/super-admin";
 
     default:
       return "/";
   }
+}
+
+export default function redirectByRole(role) {
+  return getDashboardPathByRole(role);
 }

@@ -270,20 +270,20 @@ function PartnersPage() {
             <div className="card border-0 shadow-sm rounded-5 h-100 overflow-hidden">
 
               <div className="text-center py-4" style={{ background: "linear-gradient(135deg,#0d6efd,#20c997)" }}>
-                <img src={partner.logo || '/assets/placeholder-80.png'} alt={partner.name} className="rounded-circle bg-white p-2" width="90" height="90" />
+                <img src={partner.logo_url || '/assets/placeholder-80.png'} alt={partner.name} className="rounded-circle bg-white p-2" width="90" height="90" />
               </div>
 
               <div className="card-body">
                 <h5 className="fw-bold">{partner.name}</h5>
-                <p className="text-muted small mb-3">{partner.type}</p>
+                <p className="text-muted small mb-3">{partner.website || "Strategic partner"}</p>
 
-                <div className="mb-2"><strong>Contact:</strong><br />{partner.contactPerson}</div>
+                <div className="mb-2"><strong>Contact:</strong><br />{partner.contact_email || "—"}</div>
 
-                <div className="small text-muted mb-2"><Mail size={14} className="me-2" />{partner.email}</div>
+                <div className="small text-muted mb-2"><Mail size={14} className="me-2" />{partner.contact_email || "—"}</div>
 
-                <div className="small text-muted mb-3"><Phone size={14} className="me-2" />{partner.phone}</div>
+                <div className="small text-muted mb-3"><Phone size={14} className="me-2" />{partner.website || "—"}</div>
 
-                <span className={`badge ${partner.status === "Active" ? "bg-success" : partner.status === "Pending" ? "bg-warning text-dark" : "bg-secondary"}`}>{partner.status}</span>
+                <span className={`badge ${partner.status === "active" ? "bg-success" : partner.status === "pending" ? "bg-warning text-dark" : "bg-secondary"}`}>{partner.status || "active"}</span>
               </div>
 
               <div className="card-footer bg-white border-0 pb-4">

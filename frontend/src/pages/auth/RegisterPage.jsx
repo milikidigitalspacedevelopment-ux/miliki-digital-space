@@ -319,7 +319,7 @@ function RegisterPage() {
       <div className="row g-0 align-items-stretch w-100">
         <div className="col-lg-6 d-none d-lg-flex auth-hero-panel">
           <div className="auth-hero-content">
-            <img src="/logo.png" alt="Miliki hero" className="auth-hero-image" />
+            <img src="/auth-logo.png" alt="Miliki hero" className="auth-hero-image" />
             <h3>Welcome to Miliki</h3>
             <p className="text-muted">
               Register in a few easy steps to join students, donors, and volunteers building impact.
@@ -590,7 +590,7 @@ function RegisterPage() {
                       </div>
                     </div>
 
-                    <div className="mb-3 form-check">
+                    <div className="mb-3 form-check d-flex align-items-center gap-2">
                       <input
                         type="checkbox"
                         className="form-check-input"
@@ -599,7 +599,7 @@ function RegisterPage() {
                         checked={formData.termsAccepted}
                         onChange={handleChange}
                       />
-                      <label htmlFor="termsAccepted" className="form-check-label">
+                      <label htmlFor="termsAccepted" className="form-check-label user-select-none">
                         I accept the Terms and Conditions
                       </label>
                     </div>

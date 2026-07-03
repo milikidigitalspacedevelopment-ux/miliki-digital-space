@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BookOpen,
   Plus,
@@ -9,46 +9,41 @@ import {
   Trash2,
   Eye,
 } from "lucide-react";
+import courseService from "../../services/courseService";
 
 function CoursesPage() {
+  const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const courses = [
-    {
-      id: 1,
-      title: "Web Development",
-      instructor: "John Doe",
-      category: "Technology",
-      students: 125,
-      status: "Published",
-    },
-    {
-      id: 2,
-      title: "Digital Marketing",
-      instructor: "Mary Wanjiku",
-      category: "Business",
-      students: 89,
-      status: "Draft",
-    },
-    {
-      id: 3,
-      title: "Graphic Design",
-      instructor: "David Kimani",
-      category: "Creative",
-      students: 63,
-      status: "Published",
-    },
-  ];
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await courseService.getAllCourses();
+        setCourses(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error(err);
+        setError("Unable to load courses.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredCourses = courses.filter(
-    (course) =>
-      course.title
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      course.instructor
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-  );
+    loadCourses();
+  }, []);
+
+  const filteredCourses = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    return courses.filter((course) => {
+      const title = (course.title || "").toLowerCase();
+      const instructor = (course.instructor_name || "").toLowerCase();
+      const category = (course.category_name || "").toLowerCase();
+      return title.includes(term) || instructor.includes(term) || category.includes(term);
+    });
+  }, [courses, searchTerm]);
 
   return (
     <div className="container-fluid py-4">
@@ -102,7 +97,7 @@ function CoursesPage() {
                   </small>
 
                   <h3 className="fw-bold mb-0">
-                    127
+                    {courses.length}
                   </h3>
                 </div>
 
@@ -138,7 +133,7 @@ function CoursesPage() {
                   </small>
 
                   <h3 className="fw-bold mb-0">
-                    3,842
+                    {courses.reduce((sum, course) => sum + (Number(course.duration_hours) || 0), 0)}
                   </h3>
                 </div>
 
@@ -174,7 +169,7 @@ function CoursesPage() {
                   </small>
 
                   <h3 className="fw-bold mb-0">
-                    94
+                    {courses.filter((course) => (course.status || "").toLowerCase() === "published").length}
                   </h3>
                 </div>
 
@@ -258,7 +253,19 @@ function CoursesPage() {
 
             <tbody>
 
-              {filteredCourses.map((course) => (
+              {loading && (
+                <tr>
+                  <td colSpan="6" className="text-center py-4">Loading courses...</td>
+                </tr>
+              )}
+
+              {!loading && error && (
+                <tr>
+                  <td colSpan="6" className="text-center py-4 text-danger">{error}</td>
+                </tr>
+              )}
+
+              {!loading && !error && filteredCourses.map((course) => (
                 <tr key={course.id}>
 
                   <td className="fw-semibold">
@@ -266,22 +273,22 @@ function CoursesPage() {
                   </td>
 
                   <td>
-                    {course.instructor}
+                    {course.instructor_name || "—"}
                   </td>
 
                   <td>
-                    {course.category}
+                    {course.category_name || "—"}
                   </td>
 
                   <td>
-                    {course.students}
+                    {course.duration_hours || 0}
                   </td>
 
                   <td>
 
                     <span
                       className={`badge ${
-                        course.status === "Published"
+                        (course.status || "").toLowerCase() === "published"
                           ? "bg-success"
                           : "bg-warning"
                       }`}

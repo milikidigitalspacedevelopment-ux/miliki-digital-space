@@ -9,7 +9,6 @@ import blogService from "../../services/blogService";
 
 function BlogDetailsPage() {
   const { id } = useParams();
-
   const [blog, setBlog] = useState(null);
 
   useEffect(() => {
@@ -19,20 +18,24 @@ function BlogDetailsPage() {
   const loadBlog = async () => {
     try {
       const response = await blogService.getBlogById(id);
-      setBlog(response.data);
-    } catch {
+      const blogData = response?.data || response;
       setBlog({
-        title: "Empowering Youth Through Digital Skills",
-        image: "/images/blog.jpg",
-        author: "Miliki Team",
-        date: "July 2026",
-        readTime: "5 min read",
-        content: `
-Digital literacy is becoming one of the most important skills for the modern world.
-
-Our programs are equipping young people with practical knowledge that creates employment opportunities and encourages innovation.
-        `,
+        ...blogData,
+        title: blogData?.title || "Untitled article",
+        image: blogData?.featured_image || blogData?.image || "/images/blog.jpg",
+        author: blogData?.author_name || blogData?.author || "Miliki Team",
+        date:
+          blogData?.published_at
+            ? new Date(blogData.published_at).toLocaleDateString()
+            : blogData?.date || "TBD",
+        readTime:
+          blogData?.readTime ||
+          `${Math.max(3, Math.ceil((blogData?.content || "").length / 200))} min read`,
+        content: blogData?.content || blogData?.excerpt || "No content available yet.",
       });
+    } catch (error) {
+      console.error(error);
+      setBlog(null);
     }
   };
 
@@ -45,7 +48,7 @@ Our programs are equipping young people with practical knowledge that creates em
         <Breadcrumbs
           items={[
             { label: "Home", path: "/" },
-            { label: "Blog", path: "/blog" },
+            { label: "Blog", path: "/blogs" },
             { label: blog.title },
           ]}
         />

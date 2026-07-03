@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import heroImage from "../../assets/hero.png";
+import api from "../../services/api";
 
 import PageBanner from "../../components/common/PageBanner";
 
@@ -9,26 +11,47 @@ import ImpactSection from "../../components/sections/ImpactSection";
 import TeamSection from "../../components/sections/TeamSection";
 import SponsorsSection from "../../components/sections/SponsorsSection";
 import FloatingCTASection from "../../components/sections/FloatingCTASection";
+import analyticsService from "../../services/analyticsService";
 
 function AboutPage() {
-  const stats = [
-    {
-      value: "500+",
-      label: "Youth Empowered",
-    },
-    {
-      value: "40+",
-      label: "Courses",
-    },
-    {
-      value: "25+",
-      label: "Partners",
-    },
-    {
-      value: "100+",
-      label: "Volunteers",
-    },
-  ];
+  const [stats, setStats] = useState([]);
+  const [content, setContent] = useState({ mission: {}, vision: {} });
+
+  useEffect(() => {
+    let active = true;
+
+    const loadStats = async () => {
+      try {
+        const [dashboard, payload] = await Promise.all([
+          analyticsService.getDashboardStats().catch(() => null),
+          api.get("/content/about").then((res) => res.data).catch(() => null),
+        ]);
+
+        if (!active) return;
+
+        if (Array.isArray(dashboard?.stats)) {
+          setStats(
+            dashboard.stats.map((item) => ({
+              value: item.value || item.count || item.total || "0",
+              label: item.title || "Metric",
+            }))
+          );
+        }
+
+        if (payload) {
+          setContent({ mission: payload.mission || {}, vision: payload.vision || {} });
+        }
+      } catch (error) {
+        console.error("Failed to load about page data", error);
+      }
+    };
+
+    loadStats();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <>
@@ -53,14 +76,11 @@ function AboutPage() {
                 }}
               >
                 <h2 className="fw-bold mb-4">
-                  Our Mission
+                  {content.mission?.title || "Our Mission"}
                 </h2>
 
                 <p className="mb-0">
-                  To empower youth and communities
-                  through practical skills training,
-                  mentorship, entrepreneurship, and
-                  sustainable development initiatives.
+                  {content.mission?.body || "To empower youth and communities through practical skills training, mentorship, entrepreneurship and sustainable development initiatives."}
                 </p>
               </div>
             </div>
@@ -74,14 +94,11 @@ function AboutPage() {
                 }}
               >
                 <h2 className="fw-bold mb-4">
-                  Our Vision
+                  {content.vision?.title || "Our Vision"}
                 </h2>
 
                 <p className="mb-0">
-                  A society where every individual
-                  has the opportunity and skills
-                  needed to achieve economic and
-                  social independence.
+                  {content.vision?.body || "A society where every individual has the opportunity and skills needed to achieve economic and social independence."}
                 </p>
               </div>
             </div>

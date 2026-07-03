@@ -26,7 +26,7 @@ function ProtectedRoute() {
 
   return isAuthenticated
     ? <Outlet />
-    : <Navigate to="/" replace />;
+    : <Navigate to="/login" replace />;
 }
 
 export default ProtectedRoute;

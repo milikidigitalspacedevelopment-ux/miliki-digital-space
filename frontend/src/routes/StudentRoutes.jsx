@@ -48,11 +48,6 @@ function StudentRoutes() {
         />
 
         <Route
-          path="messages"
-          element={<NotificationsPage />}
-        />
-
-        <Route
           path="profile"
           element={<ProfilePage />}
         />

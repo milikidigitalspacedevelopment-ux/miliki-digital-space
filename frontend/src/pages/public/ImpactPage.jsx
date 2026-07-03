@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import api from "../../services/api";
 
 import PageBanner from "../../components/common/PageBanner";
 import SectionHeader from "../../components/common/SectionHeader";
@@ -20,10 +21,9 @@ import analyticsService from "../../services/analyticsService";
 
 function ImpactPage() {
   const [stats, setStats] = useState(null);
-
   const [stories, setStories] = useState([]);
-
   const [loading, setLoading] = useState(true);
+  const [content, setContent] = useState({ hero: {}, highlights: [] });
 
   useEffect(() => {
     fetchImpactData();
@@ -33,52 +33,21 @@ function ImpactPage() {
     try {
       setLoading(true);
 
-      const response =
-        await analyticsService.getImpactOverview();
-
-      setStats(response.data.stats);
-
-      setStories(response.data.stories);
-    } catch (error) {
-      console.log(error);
-
-      setStats({
-        livesImpacted: 25000,
-        graduates: 6200,
-        jobsCreated: 1800,
-        communities: 54,
-
-        years: 8,
-      });
-
-      setStories([
-        {
-          id: 1,
-          title: "Digital Skills Changed My Life",
-          excerpt:
-            "Training gave me confidence and employment opportunities.",
-          image:
-            "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-        },
-
-        {
-          id: 2,
-          title: "Women Entrepreneurship Program",
-          excerpt:
-            "I was able to start my own small business.",
-          image:
-            "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df",
-        },
-
-        {
-          id: 3,
-          title: "Youth Innovation Initiative",
-          excerpt:
-            "Access to mentorship transformed our community.",
-          image:
-            "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
-        },
+      const [response, contentResponse] = await Promise.all([
+        analyticsService.getImpactOverview().catch(() => null),
+        api.get("/content/impact").then((res) => res.data).catch(() => null),
       ]);
+
+      const payload = response?.data ?? response;
+      setStats(payload?.stats || null);
+      setStories(Array.isArray(payload?.stories) ? payload.stories : []);
+      if (contentResponse) {
+        setContent({ hero: contentResponse.hero || {}, highlights: contentResponse.highlights || [] });
+      }
+    } catch (error) {
+      console.error(error);
+      setStats(null);
+      setStories([]);
     } finally {
       setLoading(false);
     }
@@ -116,18 +85,15 @@ function ImpactPage() {
 
               <h1 className="display-4 fw-bold mb-4">
 
-                Creating Opportunities
+                {content.hero?.title || "Creating Opportunities"}
                 <br />
-                and Changing Lives
+                {content.hero?.subtitle ? content.hero.subtitle : "and Changing Lives"}
 
               </h1>
 
               <p className="lead">
 
-                Through education, entrepreneurship,
-                digital skills, and community empowerment,
-                we continue building sustainable futures
-                for thousands of individuals and families.
+                {content.hero?.subtitle || "Through education, entrepreneurship, digital skills and community empowerment, we continue building sustainable futures for thousands of individuals and families."}
 
               </p>
 

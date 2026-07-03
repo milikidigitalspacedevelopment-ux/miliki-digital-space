@@ -114,6 +114,7 @@ CREATE TABLE IF NOT EXISTS programs (
 	updated_at TIMESTAMPTZ DEFAULT now()
 );
 
+
 -- Courses
 CREATE TABLE IF NOT EXISTS courses (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -262,15 +263,19 @@ CREATE TABLE IF NOT EXISTS blogs (
 	slug TEXT NOT NULL UNIQUE,
 	content TEXT NOT NULL,
 	author_id UUID REFERENCES users(id) ON DELETE SET NULL,
+	author_name TEXT,
 	category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
 	status TEXT DEFAULT 'draft',
 	featured_image TEXT,
 	likes INTEGER DEFAULT 0,
 	views INTEGER DEFAULT 0,
+	featured BOOLEAN DEFAULT FALSE,
 	published_at TIMESTAMPTZ,
 	created_at TIMESTAMPTZ DEFAULT now(),
 	updated_at TIMESTAMPTZ DEFAULT now()
 );
+
+ALTER TABLE IF NOT EXISTS blogs ADD COLUMN IF NOT EXISTS featured BOOLEAN DEFAULT FALSE;
 
 -- Stories
 CREATE TABLE IF NOT EXISTS stories (
@@ -330,6 +335,7 @@ CREATE TABLE IF NOT EXISTS donations (
 	amount DECIMAL(10,2) NOT NULL,
 	currency TEXT DEFAULT 'KES',
 	message TEXT,
+	payment_method TEXT DEFAULT 'Mpesa',
 	is_anonymous BOOLEAN DEFAULT FALSE,
 	status TEXT DEFAULT 'pending',
 	created_at TIMESTAMPTZ DEFAULT now(),

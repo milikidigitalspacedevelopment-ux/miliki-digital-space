@@ -48,6 +48,18 @@
     color: var(--miliki-muted);
 }
 
+.auth-form .form-check-input{
+    width: 1.05rem;
+    height: 1.05rem;
+    margin-top: 0;
+    cursor: pointer;
+}
+
+.auth-form .form-check-label{
+    cursor: pointer;
+    user-select: none;
+}
+
 @media (max-width:576px){
     .auth-card-body{ padding:1rem; }
     .auth-title{ font-size:1.25rem; }

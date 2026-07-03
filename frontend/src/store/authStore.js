@@ -12,13 +12,17 @@ const useAuthStore = create((set) => ({
   login: ({ user, token, rememberMe = true }) => {
     if (rememberMe) {
       localStorage.setItem("token", token);
+      localStorage.setItem("accessToken", token);
       localStorage.setItem("user", JSON.stringify(user));
       sessionStorage.removeItem("token");
+      sessionStorage.removeItem("accessToken");
       sessionStorage.removeItem("user");
     } else {
       sessionStorage.setItem("token", token);
+      sessionStorage.setItem("accessToken", token);
       sessionStorage.setItem("user", JSON.stringify(user));
       localStorage.removeItem("token");
+      localStorage.removeItem("accessToken");
       localStorage.removeItem("user");
     }
 

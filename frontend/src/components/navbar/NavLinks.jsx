@@ -6,7 +6,7 @@ export const links = [
   { name: "Programs", path: "/programs" },
   { name: "Courses", path: "/courses" },
   { name: "Events", path: "/events" },
-  { name: "Blog", path: "/blog" },
+  { name: "Blog", path: "/blogs" },
   { name: "Impact", path: "/impact" },
   { name: "Volunteer", path: "/volunteer" },
   { name: "Donate", path: "/donate" },

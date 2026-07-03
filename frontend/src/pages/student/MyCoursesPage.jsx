@@ -255,23 +255,12 @@ function MyCoursesPage() {
           description="There are currently no courses matching your search."
         />
       ) : (
-        <div className="row g-4">
-
+        <div className="course-grid">
           {filteredCourses.map((course) => (
-
-            <div
-              className="col-xl-4 col-lg-6"
-              key={course.id}
-            >
-
-              <CourseCard
-                course={course}
-              />
-
+            <div className="course-card-wrapper" key={course.id}>
+              <CourseCard course={course} />
             </div>
-
           ))}
-
         </div>
       )}
 

@@ -12,6 +12,7 @@ function CourseDetailsPage() {
   const { id } = useParams();
 
   const [course, setCourse] = useState(null);
+  const [relatedCourses, setRelatedCourses] = useState([]);
 
   useEffect(() => {
     loadCourse();
@@ -20,39 +21,52 @@ function CourseDetailsPage() {
   const loadCourse = async () => {
     try {
       const response = await courseService.getCourseById(id);
+      const courseData = response?.data || response;
 
-      setCourse(response?.data);
-    } catch {
-      setCourse({
-        title: "Web Development",
-        image: "/images/course.jpg",
-        overview:
-          "Learn HTML, CSS, JavaScript and React to become a modern web developer.",
-        duration: "12 Weeks",
-        level: "Beginner",
-        certificate: "Yes",
-        language: "English",
+      const normalizedCourse = {
+        ...courseData,
+        title: courseData?.title || "Untitled course",
+        image: courseData?.image || "/images/course.jpg",
+        overview: courseData?.overview || courseData?.description || "More details coming soon.",
+        duration: courseData?.duration || courseData?.duration_hours || "Flexible",
+        level: courseData?.level || "Beginner",
+        certificate: courseData?.certificate || "Yes",
+        language: courseData?.language || "English",
+        learn: courseData?.learn || ["Practical skills", "Mentorship", "Hands-on practice"],
+        requirements: courseData?.requirements || ["Basic computer literacy"],
+        instructor:
+          courseData?.instructor ||
+          (courseData?.instructor_name && {
+            name: courseData.instructor_name,
+            title: "Course instructor",
+            image: "/images/instructor.jpg",
+          }) || {
+            name: "Instructor",
+            title: "Course instructor",
+            image: "/images/instructor.jpg",
+          },
+      };
 
-        learn: [
-          "HTML & CSS",
-          "JavaScript",
-          "React",
-          "REST APIs",
-          "Responsive Design"
-        ],
+      setCourse(normalizedCourse);
 
-        requirements: [
-          "Laptop",
-          "Internet access",
-          "Basic computer literacy"
-        ],
+      const allPublished = await courseService.getCourses({ status: "Published" });
+      const publishedCourses = Array.isArray(allPublished)
+        ? allPublished
+        : allPublished?.data || [];
+      const categoryName = (courseData.category_name || courseData.category || "").toLowerCase();
 
-        instructor: {
-          name: "John Doe",
-          title: "Senior Software Trainer",
-          image: "/images/instructor.jpg"
-        }
-      });
+      setRelatedCourses(
+        publishedCourses
+          .filter(
+            (item) =>
+              item.id !== normalizedCourse.id &&
+              (item.category_name || item.category || "").toLowerCase() === categoryName
+          )
+          .slice(0, 3)
+      );
+    } catch (error) {
+      console.error(error);
+      setCourse(null);
     }
   };
 
@@ -177,24 +191,19 @@ function CourseDetailsPage() {
             </div>
 
             <div className="mt-5">
+              <h3 className="fw-bold mb-4">Related Courses</h3>
 
-              <h3 className="fw-bold mb-4">
-                Related Courses
-              </h3>
-
-              <div className="row g-4">
-
-                {[1, 2].map(item => (
-                  <div
-                    className="col-md-6"
-                    key={item}
-                  >
-                    <CourseCard />
-                  </div>
-                ))}
-
-              </div>
-
+              {relatedCourses.length === 0 ? (
+                <p className="text-muted">More courses will be added soon.</p>
+              ) : (
+                <div className="course-grid">
+                  {relatedCourses.map((relatedCourse) => (
+                    <div className="course-card-wrapper" key={relatedCourse.id}>
+                      <CourseCard course={relatedCourse} />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
           </div>

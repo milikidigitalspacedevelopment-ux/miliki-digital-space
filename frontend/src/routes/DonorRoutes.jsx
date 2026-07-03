@@ -29,6 +29,11 @@ function DonorRoutes() {
         />
 
         <Route
+          path="reports"
+          element={<ImpactReportsPage />}
+        />
+
+        <Route
           path="receipts"
           element={<ReceiptsPage />}
         />

@@ -1,51 +1,52 @@
 // src/pages/admin/UsersPage.jsx
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Plus,
   Users,
   Filter,
 } from "lucide-react";
+import api from "../../services/api";
+
+const normalizeUsers = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.users)) return payload.users;
+  return [];
+};
 
 function UsersPage() {
   const [search, setSearch] = useState("");
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const users = [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@example.com",
-      role: "Student",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Mary Wanjiku",
-      email: "mary@example.com",
-      role: "Volunteer",
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "David Kimani",
-      email: "david@example.com",
-      role: "Trainer",
-      status: "Inactive",
-    },
-    {
-      id: 4,
-      name: "Grace Achieng",
-      email: "grace@example.com",
-      role: "Donor",
-      status: "Active",
-    },
-  ];
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get("/users");
+        const payload = response?.data?.data ?? response?.data?.users ?? response?.data;
+        setUsers(normalizeUsers(payload));
+      } catch (err) {
+        console.error(err);
+        setError("Unable to load users right now.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase())
-  );
+    loadUsers();
+  }, []);
+
+  const filteredUsers = useMemo(() => {
+    const term = search.toLowerCase();
+    return users.filter((user) => {
+      const name = (user.name || user.full_name || "").toLowerCase();
+      const email = (user.email || "").toLowerCase();
+      return name.includes(term) || email.includes(term);
+    });
+  }, [users, search]);
 
   return (
     <div className="container-fluid py-4">
@@ -94,7 +95,7 @@ function UsersPage() {
                   </small>
 
                   <h3 className="fw-bold mb-0">
-                    12,548
+                    {users.length}
                   </h3>
                 </div>
 
@@ -160,7 +161,19 @@ function UsersPage() {
 
             <tbody>
 
-              {filteredUsers.map((user) => (
+              {loading && (
+                <tr>
+                  <td colSpan="5" className="text-center py-4">Loading users...</td>
+                </tr>
+              )}
+
+              {!loading && error && (
+                <tr>
+                  <td colSpan="5" className="text-center py-4 text-danger">{error}</td>
+                </tr>
+              )}
+
+              {!loading && !error && filteredUsers.map((user) => (
                 <tr key={user.id}>
 
                   <td className="fw-semibold">
@@ -173,19 +186,19 @@ function UsersPage() {
 
                   <td>
                     <span className="badge bg-primary">
-                      {user.role}
+                      {user.role || "User"}
                     </span>
                   </td>
 
                   <td>
                     <span
                       className={`badge ${
-                        user.status === "Active"
+                        (user.is_active ?? user.status === "Active")
                           ? "bg-success"
                           : "bg-danger"
                       }`}
                     >
-                      {user.status}
+                      {(user.is_active ?? user.status === "Active") ? "Active" : "Inactive"}
                     </span>
                   </td>
 

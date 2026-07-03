@@ -26,50 +26,26 @@ function ProgramsPage() {
     try {
       setLoading(true);
 
-      // Backend ready
       const response = await programService.getPrograms();
+      const payload = Array.isArray(response) ? response : response?.data || response?.programs || [];
 
-      setPrograms(Array.isArray(response) ? response : response?.data || []);
+      setPrograms(payload);
     } catch (error) {
       console.error(error);
-
-      // Temporary mock data
-      setPrograms([
-        {
-          id: 1,
-          title: "Tailoring & Fashion Design",
-          category: "Fashion",
-          image: "/images/program1.jpg",
-          description:
-            "Acquire practical tailoring and fashion design skills."
-        },
-        {
-          id: 2,
-          title: "Digital Skills",
-          category: "Technology",
-          image: "/images/program2.jpg",
-          description:
-            "Learn web development, graphic design and digital literacy."
-        },
-        {
-          id: 3,
-          title: "Agribusiness",
-          category: "Agriculture",
-          image: "/images/program3.jpg",
-          description:
-            "Modern farming and agribusiness opportunities."
-        }
-      ]);
+      setPrograms([]);
     } finally {
       setLoading(false);
     }
   };
 
   const categories = useMemo(() => {
-    return [
-      "All",
-      ...new Set(programs.map((item) => item.category))
-    ];
+    const unique = [
+      ...new Set(
+        programs.map((item) => item.category || item.category_name || "")
+      ),
+    ].filter(Boolean);
+
+    return ["All", ...unique];
   }, [programs]);
 
   const filteredPrograms = useMemo(() => {
@@ -124,13 +100,9 @@ function ProgramsPage() {
             message="Try changing your filters."
           />
         ) : (
-          <div className="row g-4">
-
+          <div className="program-grid">
             {filteredPrograms.map((program) => (
-              <div
-                key={program.id}
-                className="col-md-6 col-xl-4"
-              >
+              <div className="program-card-wrapper" key={program.id}>
                 <ProgramCard program={program} />
 
                 <div className="mt-3">
@@ -143,7 +115,6 @@ function ProgramsPage() {
                 </div>
               </div>
             ))}
-
           </div>
         )}
       </section>

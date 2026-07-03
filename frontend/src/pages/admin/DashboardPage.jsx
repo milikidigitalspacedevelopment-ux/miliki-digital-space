@@ -9,13 +9,14 @@ import {
   HeartHandshake,
 } from "lucide-react";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ChartCard from "../../components/charts/ChartCard";
 import AreaChartComponent from "../../components/charts/AreaChartComponent";
 import LineChartComponent from "../../components/charts/LineChartComponent";
 import PieChartComponent from "../../components/charts/PieChartComponent";
 import DonutChartComponent from "../../components/charts/DonutChartComponent";
 import analyticsService from "../../services/analyticsService";
+import eventService from "../../services/eventService";
 import notificationService from "../../services/notificationService";
 import useDashboardStore from "../../store/dashboardStore";
 import useNotificationStore from "../../store/notificationStore";
@@ -24,25 +25,25 @@ function DashboardPage() {
   const defaultStats = [
     {
       title: "Total Users",
-      value: "12,548",
+      value: "0",
       icon: <Users size={26} />,
       bg: "bg-primary",
     },
     {
       title: "Programs",
-      value: "34",
+      value: "0",
       icon: <GraduationCap size={26} />,
       bg: "bg-success",
     },
     {
       title: "Courses",
-      value: "127",
+      value: "0",
       icon: <BookOpen size={26} />,
       bg: "bg-warning",
     },
     {
       title: "Donations",
-      value: "$68,420",
+      value: "KES 0",
       icon: <HandCoins size={26} />,
       bg: "bg-danger",
     },
@@ -57,24 +58,16 @@ function DashboardPage() {
   const setLoading = useDashboardStore((s) => s.setLoading);
 
   const setNotifications = useNotificationStore((s) => s.setNotifications);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
 
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: "Women Empowerment Summit",
-      date: "Aug 20",
-    },
-    {
-      id: 2,
-      title: "Digital Skills Workshop",
-      date: "Aug 25",
-    },
-    {
-      id: 3,
-      title: "Youth Leadership Forum",
-      date: "Sep 02",
-    },
-  ];
+  const formatEventDate = (value) => {
+    if (!value) return "TBD";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+
+    return date.toLocaleDateString("en", { month: "short", day: "numeric" });
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -83,14 +76,35 @@ function DashboardPage() {
 
         const dashboard = await analyticsService.getDashboardStats();
         if (dashboard) {
-          // Expecting shape { stats: [...], recentActivities: [...] }
-          if (dashboard.stats) setStats(dashboard.stats);
-          if (dashboard.recentActivities)
-            setRecentActivities(dashboard.recentActivities);
+          const nextStats = Array.isArray(dashboard.stats)
+            ? dashboard.stats.map((item) => ({
+                ...item,
+                icon: item.title?.toLowerCase().includes("users") ? <Users size={26} /> :
+                  item.title?.toLowerCase().includes("program") ? <GraduationCap size={26} /> :
+                  item.title?.toLowerCase().includes("course") ? <BookOpen size={26} /> :
+                  <HandCoins size={26} />,
+                bg: item.bg || "bg-primary",
+              }))
+            : defaultStats;
+
+          setStats(nextStats);
+          setRecentActivities(Array.isArray(dashboard.recentActivities) ? dashboard.recentActivities : []);
         }
 
-        const notifications =
-          await notificationService.getNotifications();
+        const [events, notifications] = await Promise.all([
+          eventService.getEvents().catch(() => []),
+          notificationService.getNotifications().catch(() => []),
+        ]);
+
+        const normalizedEvents = (Array.isArray(events) ? events : [])
+          .slice(0, 4)
+          .map((event) => ({
+            id: event.id || event._id || event.slug,
+            title: event.title || event.name || "Untitled event",
+            date: formatEventDate(event.start_date || event.startDate || event.date),
+          }));
+
+        setUpcomingEvents(normalizedEvents);
         if (notifications) setNotifications(notifications);
       } catch (err) {
         console.error(err);
@@ -256,30 +270,34 @@ function DashboardPage() {
 
             <div className="card-body">
 
-              {upcomingEvents.map((event) => (
-                <div
-                  key={event.id}
-                  className="d-flex justify-content-between align-items-center mb-4"
-                >
-                  <div className="d-flex align-items-center">
+              {upcomingEvents.length > 0 ? (
+                upcomingEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className="d-flex justify-content-between align-items-center mb-4"
+                  >
+                    <div className="d-flex align-items-center">
 
-                    <div className="bg-light rounded-circle p-3 me-3">
-                      <CalendarDays size={20} />
-                    </div>
-
-                    <div>
-                      <div className="fw-semibold">
-                        {event.title}
+                      <div className="bg-light rounded-circle p-3 me-3">
+                        <CalendarDays size={20} />
                       </div>
 
-                      <small className="text-muted">
-                        {event.date}
-                      </small>
-                    </div>
+                      <div>
+                        <div className="fw-semibold">
+                          {event.title}
+                        </div>
 
+                        <small className="text-muted">
+                          {event.date}
+                        </small>
+                      </div>
+
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <div className="text-muted">No upcoming events available right now.</div>
+              )}
 
             </div>
 

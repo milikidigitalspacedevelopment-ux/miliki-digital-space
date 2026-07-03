@@ -22,23 +22,16 @@ function EventDetailsPage() {
 
       setEvent({
         ...eventData,
+        title: eventData?.title || "Untitled event",
+        image: eventData?.image || "/images/event.jpg",
         date: eventData?.date || eventData?.event_date || "TBD",
         time: eventData?.time || "To be announced",
         location: eventData?.location || "TBD",
-        description:
-          eventData?.description ||
-          "Join us for this community event.",
+        description: eventData?.description || "Join us for this community event.",
       });
-    } catch {
-      setEvent({
-        title: "Youth Empowerment Workshop",
-        image: "/images/event.jpg",
-        date: "August 15, 2026",
-        time: "10:00 AM",
-        location: "Nairobi",
-        description:
-          "A workshop aimed at empowering youth with practical skills and mentorship opportunities.",
-      });
+    } catch (error) {
+      console.error(error);
+      setEvent(null);
     }
   };
 

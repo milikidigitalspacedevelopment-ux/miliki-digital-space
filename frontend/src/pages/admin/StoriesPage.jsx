@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BookOpen,
   Eye,
@@ -13,70 +13,46 @@ import {
   Star,
   Clock,
 } from "lucide-react";
+import api from "../../services/api";
+
+const normalizeStories = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.stories)) return payload.stories;
+  return [];
+};
 
 function StoriesPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const stories = [
-    {
-      id: 1,
-      title: "How Sarah Started Her Digital Career",
-      author: "Admin",
-      category: "Youth Empowerment",
-      status: "Published",
-      featured: true,
-      views: 1245,
-      likes: 340,
-      comments: 48,
-      date: "12 Jun 2026",
-      image: "https://picsum.photos/600/400?1",
-    },
-    {
-      id: 2,
-      title: "Women Entrepreneurs Changing Communities",
-      author: "Grace Wanjiku",
-      category: "Women Empowerment",
-      status: "Published",
-      featured: false,
-      views: 832,
-      likes: 211,
-      comments: 32,
-      date: "10 Jun 2026",
-      image: "https://picsum.photos/600/400?2",
-    },
-    {
-      id: 3,
-      title: "Scholarship Program Success Story",
-      author: "John Otieno",
-      category: "Education",
-      status: "Draft",
-      featured: false,
-      views: 0,
-      likes: 0,
-      comments: 0,
-      date: "8 Jun 2026",
-      image: "https://picsum.photos/600/400?3",
-    },
-    {
-      id: 4,
-      title: "Transforming Communities Through Skills",
-      author: "Admin",
-      category: "Community Development",
-      status: "Archived",
-      featured: false,
-      views: 510,
-      likes: 120,
-      comments: 17,
-      date: "3 Jun 2026",
-      image: "https://picsum.photos/600/400?4",
-    },
-  ];
+  useEffect(() => {
+    const loadStories = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get("/stories");
+        setStories(normalizeStories(response?.data));
+      } catch (err) {
+        console.error(err);
+        setError("Unable to load stories.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredStories = stories.filter(
-    (story) =>
-      story.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      story.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    loadStories();
+  }, []);
+
+  const filteredStories = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    return stories.filter((story) => {
+      const title = (story.title || "").toLowerCase();
+      const category = (story.category || "").toLowerCase();
+      return title.includes(term) || category.includes(term);
+    });
+  }, [stories, searchTerm]);
 
   return (
     <div className="container-fluid py-4">
@@ -116,7 +92,7 @@ function StoriesPage() {
               <div className="d-flex align-items-center mt-2">
                 <BookOpen className="text-primary me-3" size={32} />
                 <h3 className="fw-bold mb-0">
-                  68
+                  {stories.length}
                 </h3>
               </div>
             </div>
@@ -133,7 +109,7 @@ function StoriesPage() {
               <div className="d-flex align-items-center mt-2">
                 <Star className="text-success me-3" size={32} />
                 <h3 className="fw-bold mb-0">
-                  51
+                  {stories.filter((story) => (story.status || "").toLowerCase() === "published").length}
                 </h3>
               </div>
             </div>
@@ -150,7 +126,7 @@ function StoriesPage() {
               <div className="d-flex align-items-center mt-2">
                 <Clock className="text-warning me-3" size={32} />
                 <h3 className="fw-bold mb-0">
-                  11
+                  {stories.filter((story) => (story.status || "").toLowerCase() === "draft").length}
                 </h3>
               </div>
             </div>
@@ -167,7 +143,7 @@ function StoriesPage() {
               <div className="d-flex align-items-center mt-2">
                 <Eye className="text-info me-3" size={32} />
                 <h3 className="fw-bold mb-0">
-                  124K
+                  {stories.reduce((sum, story) => sum + Number(story.views || 0), 0).toLocaleString()}
                 </h3>
               </div>
             </div>
@@ -242,13 +218,11 @@ function StoriesPage() {
               </span>
 
               <h3 className="fw-bold mb-3">
-                Inspiring Change Through Digital Skills Training
+                {stories[0]?.title || "Inspiring Change Through Digital Skills Training"}
               </h3>
 
               <p className="text-muted">
-                Discover how young women transformed their lives and
-                communities through entrepreneurship and digital skills
-                programs.
+                {stories[0]?.excerpt || "Discover how young women transformed their lives and communities through entrepreneurship and digital skills programs."}
               </p>
 
               <button className="btn btn-success rounded-pill px-4">
@@ -268,7 +242,9 @@ function StoriesPage() {
 
       <div className="row g-4">
 
-        {filteredStories.map((story) => (
+        {loading && <div className="text-center py-4">Loading stories...</div>}
+        {!loading && error && <div className="text-center py-4 text-danger">{error}</div>}
+        {!loading && !error && filteredStories.map((story) => (
           <div className="col-lg-4 col-md-6" key={story.id}>
 
             <div className="card border-0 shadow-sm rounded-5 overflow-hidden h-100">
@@ -332,17 +308,17 @@ function StoriesPage() {
 
                   <div>
                     <Eye size={15} className="me-1" />
-                    {story.views}
+                    {story.views || 0}
                   </div>
 
                   <div>
                     <Heart size={15} className="me-1" />
-                    {story.likes}
+                    {story.likes || 0}
                   </div>
 
                   <div>
                     <MessageCircle size={15} className="me-1" />
-                    {story.comments}
+                    {story.comments || 0}
                   </div>
 
                 </div>

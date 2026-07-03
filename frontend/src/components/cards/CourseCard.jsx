@@ -5,51 +5,49 @@ import {
 } from "react-icons/fa";
 
 function CourseCard({ course }) {
+  const title = course.title || course.name || "Untitled course";
+  const instructor = course.instructor || course.instructor_name || "Instructor";
+  const duration = course.duration || (course.duration_hours ? `${course.duration_hours} hrs` : "Flexible");
+  const students = course.students_count || course.students || course.enrollments || 0;
+  const category = course.category_name || course.category || "Course";
+  const image = course.image || course.thumbnail || "/images/course.jpg";
+  const courseId = course.slug || course.id;
+
   return (
-    <div className="card shadow-sm border-0 h-100">
+    <article className="course-card shadow-sm">
+      <div className="course-card-media">
+        <img src={image} alt={title} />
+        <span className="course-card-badge">{category}</span>
+      </div>
 
-      <img
-        src={course.image}
-        className="card-img-top"
-        alt={course.title}
-      />
-
-      <div className="card-body">
-
-        <h5 className="fw-bold">
-          {course.title}
-        </h5>
-
-        <p className="text-muted">
-          Instructor: {course.instructor}
+      <div className="course-card-body">
+        <p className="course-card-subtitle">{instructor}</p>
+        <h3 className="course-card-title">{title}</h3>
+        <p className="course-card-text">
+          {course.description || course.overview || "Learn the skills that matter most."}
         </p>
+      </div>
 
-        <div className="d-flex justify-content-between mt-3">
-
-          <small>
+      <div className="course-card-footer">
+        <div className="course-card-stats">
+          <span className="course-card-chip">
             <FaClock className="me-2" />
-            {course.duration}
-          </small>
-
-          <small>
+            {duration}
+          </span>
+          <span className="course-card-chip">
             <FaUserGraduate className="me-2" />
-            {course.students_count}
-          </small>
-
+            {students} students
+          </span>
         </div>
 
-      </div>
-
-      <div className="card-footer bg-white border-0">
         <Link
-          to={`/courses/${course.slug}`}
-          className="btn btn-success w-100"
+          to={`/courses/${courseId}`}
+          className="btn btn-success rounded-pill w-100 course-card-button"
         >
-          View Course
+          Explore course
         </Link>
       </div>
-
-    </div>
+    </article>
   );
 }
 

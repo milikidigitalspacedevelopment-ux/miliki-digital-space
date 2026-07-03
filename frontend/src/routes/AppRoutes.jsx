@@ -8,6 +8,7 @@ import TrainerRoutes from "./TrainerRoutes";
 import VolunteerRoutes from "./VolunteerRoutes";
 import DonorRoutes from "./DonorRoutes";
 import PartnerRoutes from "./PartnerRoutes";
+import SuperAdminRoutes from "./SuperAdminRoutes";
 
 function AppRoutes() {
   console.log("[dev] AppRoutes render");
@@ -22,6 +23,7 @@ function AppRoutes() {
       {VolunteerRoutes()}
       {DonorRoutes()}
       {PartnerRoutes()}
+      {SuperAdminRoutes()}
     </Routes>
   );
 }

@@ -9,7 +9,6 @@ import CourseCard from "../../components/cards/CourseCard";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import EmptyState from "../../components/common/EmptyState";
 import CTASection from "../../components/sections/CTASection";
-
 import courseService from "../../services/courseService";
 
 function CoursesPage() {
@@ -29,62 +28,63 @@ function CoursesPage() {
       setLoading(true);
 
       const response = await courseService.getCourses();
+      const payload = Array.isArray(response) ? response : response?.data || [];
 
-      setCourses(response?.data || []);
-    } catch {
-      setCourses([
-        {
-          id: 1,
-          title: "Web Development",
-          category: "Technology",
-          level: "Beginner",
-          students: 250
-        },
-        {
-          id: 2,
-          title: "Fashion Design",
-          category: "Fashion",
-          level: "Intermediate",
-          students: 180
-        },
-        {
-          id: 3,
-          title: "Agribusiness",
-          category: "Agriculture",
-          level: "Beginner",
-          students: 120
-        }
-      ]);
+      setCourses(payload);
+    } catch (error) {
+      console.error(error);
+      setCourses([]);
     } finally {
       setLoading(false);
     }
   };
 
   const categories = useMemo(() => {
-    return ["All", ...new Set(courses.map(c => c.category))];
+    const unique = [
+      ...new Set(
+        courses.map((course) => course.category_name || course.category || "")
+      ),
+    ].filter(Boolean);
+
+    return ["All", ...unique];
   }, [courses]);
 
   const filteredCourses = useMemo(() => {
     let data = [...courses];
 
-    data = data.filter(
-      course =>
-        course.title
-          .toLowerCase()
-          .includes(search.toLowerCase()) &&
-        (category === "All" || course.category === category)
-    );
+    data = data.filter((course) => {
+      const title = (course.title || "").toLowerCase();
+      const instructor = (course.instructor_name || course.instructor || "").toLowerCase();
+      const categoryName = (course.category_name || course.category || "").toLowerCase();
+      const query = search.toLowerCase();
+
+      return (
+        (title.includes(query) || instructor.includes(query) || categoryName.includes(query)) &&
+        (category === "All" || categoryName === category.toLowerCase())
+      );
+    });
 
     switch (sortBy) {
       case "alphabetical":
-        data.sort((a, b) => a.title.localeCompare(b.title));
+        data.sort((a, b) =>
+          (a.title || "").localeCompare(b.title || "")
+        );
         break;
 
       case "popular":
-        data.sort((a, b) => b.students - a.students);
+        data.sort(
+          (a, b) =>
+            (b.students_count || b.students || 0) -
+            (a.students_count || a.students || 0)
+        );
         break;
 
       default:
+        data.sort((a, b) => {
+          const aDate = new Date(a.created_at || a.createdAt || Date.now());
+          const bDate = new Date(b.created_at || b.createdAt || Date.now());
+          return bDate - aDate;
+        });
         break;
     }
 
@@ -110,7 +110,7 @@ function CoursesPage() {
             />
           </div>
 
-          <div className="col-lg-4">
+              <div className="col-lg-4">
             <CategoryPills
               categories={categories}
               activeCategory={category}
@@ -135,27 +135,12 @@ function CoursesPage() {
             message="Try adjusting your filters."
           />
         ) : (
-          <div className="row g-4">
-
-            {filteredCourses.map(course => (
-              <div
-                className="col-md-6 col-xl-4"
-                key={course.id}
-              >
+          <div className="course-grid">
+            {filteredCourses.map((course) => (
+              <div className="course-card-wrapper" key={course.id}>
                 <CourseCard course={course} />
-
-                <div className="mt-3">
-                  <Link
-                    to={`/courses/${course.id}`}
-                    className="btn btn-primary rounded-pill"
-                  >
-                    View Course
-                  </Link>
-                </div>
-
               </div>
             ))}
-
           </div>
         )}
 

@@ -47,6 +47,7 @@ const [commentMessage, setCommentMessage] = useState("");
         goalAmount:
           campaignData?.goalAmount ?? campaignData?.goal_amount ?? 1,
         location: campaignData?.location || "Nairobi, Kenya",
+        beneficiaries: campaignData?.beneficiaries ?? campaignData?.beneficiary_count ?? 0,
       });
       setRelatedCampaigns(response?.relatedCampaigns || []);
     } catch (error) {

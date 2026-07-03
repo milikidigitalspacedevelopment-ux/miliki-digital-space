@@ -8,15 +8,22 @@ const blogService = {
     return response.data;
   },
 
+  getBlogs: async (params = {}) => {
+    const response = await api.get("/blogs", { params });
+    return response.data;
+  },
+
   getBlogBySlug: async (slug) => {
     const response = await api.get(`/blogs/${slug}`);
     return response.data;
   },
 
   getBlog: async (id) => {
-    const response = await api.get(`/blogs/id/${id}`);
+    const response = await api.get(`/blogs/${id}`);
     return response.data;
   },
+
+  getBlogById: async (id) => blogService.getBlog(id),
 
   createBlog: async (payload) => {
     const response = await api.post(`/blogs`, payload);

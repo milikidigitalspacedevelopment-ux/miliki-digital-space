@@ -1,40 +1,40 @@
 import { Link } from "react-router-dom";
 
 function ProgramCard({ program }) {
+  const title = program.title || program.name || "Untitled program";
+  const description = program.description || program.summary || "";
+  const category = program.category || program.category_name || "Program";
+  const image = program.image || program.thumbnail || "/images/program.jpg";
+  const programId = program.slug || program.id;
+
   return (
     <div className="card border-0 shadow-sm h-100">
-
       <img
-        src={program.image}
+        src={image}
         className="card-img-top"
-        alt={program.title}
+        alt={title}
       />
 
       <div className="card-body">
-
         <span className="badge bg-success mb-3">
-          {program.category}
+          {category}
         </span>
 
-        <h5 className="fw-bold">
-          {program.title}
-        </h5>
+        <h5 className="fw-bold">{title}</h5>
 
-        <p className="text-muted">
-          {program.description}
-        </p>
-
+        {description ? (
+          <p className="text-muted">{description}</p>
+        ) : null}
       </div>
 
       <div className="card-footer bg-white border-0">
         <Link
-          to={`/programs/${program.slug}`}
+          to={`/programs/${programId}`}
           className="btn btn-outline-success w-100"
         >
           Learn More
         </Link>
       </div>
-
     </div>
   );
 }

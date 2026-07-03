@@ -9,8 +9,8 @@ const normalizeList = (payload) => {
 
 const normalizeItem = (payload) => payload?.data ?? payload;
 
-export const getPrograms = async () => {
-  const response = await api.get("/programs");
+export const getPrograms = async (params = {}) => {
+  const response = await api.get("/programs", { params });
   return normalizeList(response.data ?? response);
 };
 

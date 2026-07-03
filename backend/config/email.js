@@ -188,7 +188,7 @@ export const generateEmailHTML = (title, body) => `
 <body style="
   margin:0;
   padding:0;
-  background:#07141f;
+background:#f8fff4;
   font-family:Arial,Helvetica,sans-serif;
 ">
 
@@ -198,7 +198,7 @@ export const generateEmailHTML = (title, body) => `
   cellspacing="0"
   border="0"
   style="
-    background:#07141f;
+    background:#f8fff4;
     padding:20px 12px;
   "
 >
@@ -213,10 +213,10 @@ export const generateEmailHTML = (title, body) => `
   border="0"
   style="
     max-width:620px;
-    background:#0d1b2a;
+    background:#ffffff;
     border-radius:22px;
     overflow:hidden;
-    border:1px solid #1e293b;
+    border:1px solid #d9f7d8;
   "
 >
 
@@ -229,18 +229,18 @@ export const generateEmailHTML = (title, body) => `
         background:
           linear-gradient(
             135deg,
-            #07141f 0%,
-            #0d1b2a 60%,
-            #10263a 100%
+            #166c42 0%,
+            #1f8a4b 60%,
+            #22c55e 100%
           );
-        border-bottom:1px solid #1e293b;
+        border-bottom:1px solid #d9f7d8;
       "
     >
 
       <!-- LOGO -->
       <img
-        src="https://www.netsafehub.com/logo.png"
-        alt="NetSafeHub"
+        src="https://miliki-digital-space.milikidigitalspacedevelopment.workers.dev/logo.png"
+        alt="Miliki"
         style="
           width:180px;
           max-width:85%;
@@ -256,11 +256,11 @@ export const generateEmailHTML = (title, body) => `
           margin-top:12px;
           font-size:13px;
           letter-spacing:1.2px;
-          color:#11c5ff;
+          color:#fbbf24;
           font-weight:700;
         "
       >
-        BUILT ON TRUST. DRIVEN BY GROWTH.
+        BUILDING COMMUNITY. EMPOWERING GROWTH.
       </div>
 
     </td>
@@ -281,7 +281,7 @@ export const generateEmailHTML = (title, body) => `
           margin:0 0 22px;
           font-size:28px;
           line-height:1.25;
-          color:#ffffff;
+          color:#111111;
           font-weight:800;
         "
       >
@@ -293,7 +293,7 @@ export const generateEmailHTML = (title, body) => `
         style="
           font-size:16px;
           line-height:1.75;
-          color:#d6e2ee;
+          color:#374151;
         "
       >
         ${body}
@@ -307,26 +307,26 @@ export const generateEmailHTML = (title, body) => `
     <td
       style="
         padding:22px;
-        background:#08111b;
-        border-top:1px solid #1e293b;
+        background:#f8fff4;
+        border-top:1px solid #d9f7d8;
         text-align:center;
       "
     >
 
       <div
         style="
-          color:#11c5ff;
+          color:#166c42;
           font-size:14px;
           font-weight:700;
           margin-bottom:8px;
         "
       >
-        NetSafeHub Technologies
+        Miliki Digital Space
       </div>
 
       <div
         style="
-          color:#94a3b8;
+          color:#6b7280;
           font-size:13px;
           line-height:1.6;
         "
@@ -337,11 +337,11 @@ export const generateEmailHTML = (title, body) => `
       <div
         style="
           margin-top:14px;
-          color:#64748b;
+          color:#4b5563;
           font-size:12px;
         "
       >
-        © ${new Date().getFullYear()} NetSafeHub. All rights reserved.
+        © ${new Date().getFullYear()} Miliki. All rights reserved.
       </div>
 
     </td>

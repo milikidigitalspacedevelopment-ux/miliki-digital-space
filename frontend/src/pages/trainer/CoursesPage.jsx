@@ -146,26 +146,13 @@ function CoursesPage() {
 
       {/* Courses */}
 
-      <div className="row g-4">
-
+      <div className="course-grid">
         {currentCourses.map((course) => (
-
-          <div
-            className="col-xl-4 col-md-6"
-            key={course.id}
-          >
-
+          <div className="course-card-wrapper" key={course.id}>
             <div className="card border-0 shadow-sm rounded-5 h-100">
-
               <div className="card-body">
-
                 <div className="d-flex justify-content-between mb-3">
-
-                  <BookOpen
-                    size={42}
-                    className="text-primary"
-                  />
-
+                  <BookOpen size={42} className="text-primary" />
                   <span
                     className={`badge ${
                       course.status === "Published"
@@ -175,45 +162,21 @@ function CoursesPage() {
                   >
                     {course.status}
                   </span>
-
                 </div>
 
-                <h5 className="fw-bold">
+                <h5 className="fw-bold">{course.title}</h5>
 
-                  {course.title}
-
-                </h5>
-
-                <p className="text-muted">
-
-                  {course.description}
-
-                </p>
+                <p className="text-muted">{course.description}</p>
 
                 <div className="d-flex align-items-center mb-4">
-
-                  <Users
-                    size={18}
-                    className="text-secondary me-2"
-                  />
-
-                  <span>
-
-                    {course.studentsCount || 0}
-                    {" "}Students
-
-                  </span>
-
+                  <Users size={18} className="text-secondary me-2" />
+                  <span>{course.studentsCount || 0} Students</span>
                 </div>
 
-                <div className="d-flex gap-2">
-
+                <div className="d-flex gap-2 flex-wrap">
                   <button className="btn btn-outline-primary flex-fill rounded-pill">
-
                     <Edit size={16} className="me-2" />
-
                     Edit
-
                   </button>
 
                   <button
@@ -223,23 +186,14 @@ function CoursesPage() {
                       setShowDeleteModal(true);
                     }}
                   >
-
                     <Trash2 size={16} className="me-2" />
-
                     Delete
-
                   </button>
-
                 </div>
-
               </div>
-
             </div>
-
           </div>
-
         ))}
-
       </div>
 
       {/* Pagination */}

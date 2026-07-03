@@ -1,42 +1,26 @@
 import api from "./api";
 
 const courseService = {
-
-  getAllCourses: async () => {
-
-    const response =
-      await api.get("/courses");
-
+  getAllCourses: async (params = {}) => {
+    const response = await api.get("/courses", { params });
     return response.data;
-
   },
 
-  getCourseById: async (
-    id
-  ) => {
+  getCourses: async (params = {}) => courseService.getAllCourses(params),
 
-    const response =
-      await api.get(
-        `/courses/${id}`
-      );
+  getMyCourses: async (params = {}) => courseService.getAllCourses(params),
 
+  getTrainerCourses: async (params = {}) => courseService.getAllCourses(params),
+
+  getCourseById: async (id) => {
+    const response = await api.get(`/courses/${id}`);
     return response.data;
-
   },
 
-  enrollCourse: async (
-    id
-  ) => {
-
-    const response =
-      await api.post(
-        `/courses/${id}/enroll`
-      );
-
+  enrollCourse: async (id) => {
+    const response = await api.post(`/courses/${id}/enroll`);
     return response.data;
-
-  }
-
+  },
 };
 
 export default courseService;

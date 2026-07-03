@@ -2,8 +2,6 @@ import {
   FaHome,
   FaProjectDiagram,
   FaChartBar,
-  FaFolderOpen,
-  FaEnvelope,
   FaUser
 } from "react-icons/fa";
 
@@ -25,16 +23,6 @@ function PartnerLayout() {
       label: "Reports",
       path: "/partner/reports",
       icon: <FaChartBar />
-    },
-    {
-      label: "Documents",
-      path: "/partner/documents",
-      icon: <FaFolderOpen />
-    },
-    {
-      label: "Messages",
-      path: "/partner/messages",
-      icon: <FaEnvelope />
     },
     {
       label: "Profile",

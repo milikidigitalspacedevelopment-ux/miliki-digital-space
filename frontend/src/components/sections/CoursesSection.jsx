@@ -11,10 +11,8 @@ function CoursesSection() {
 
   const fetchCourses = async () => {
     try {
-      const response =
-        await courseService.getAllCourses();
-
-      setCourses(response.data || response);
+      const response = await courseService.getAllCourses();
+      setCourses(response);
     } catch (error) {
       console.error(error);
     }
