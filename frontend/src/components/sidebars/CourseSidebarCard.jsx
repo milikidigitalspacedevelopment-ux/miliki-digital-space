@@ -5,6 +5,9 @@ const CourseSidebarCard = ({
   level,
   certificate,
   language,
+  deliveryMode,
+  schedule,
+  nextIntake,
 }) => {
   return (
     <div
@@ -17,33 +20,44 @@ const CourseSidebarCard = ({
         backdropFilter: "blur(15px)",
       }}
     >
-      <h5 className="fw-bold mb-4">
-        Course Information
-      </h5>
+      <h5 className="fw-bold mb-4">Course Information</h5>
 
       <div className="mb-3">
         <strong>Duration</strong>
-        <div>{duration}</div>
+        <div>{duration || "Flexible"}</div>
       </div>
 
       <div className="mb-3">
         <strong>Level</strong>
-        <div>{level}</div>
+        <div>{level || "Beginner"}</div>
+      </div>
+
+      <div className="mb-3">
+        <strong>Delivery</strong>
+        <div>{deliveryMode || "Online"}</div>
+      </div>
+
+      <div className="mb-3">
+        <strong>Schedule</strong>
+        <div>{schedule || "Flexible"}</div>
+      </div>
+
+      <div className="mb-3">
+        <strong>Next Intake</strong>
+        <div>{nextIntake || "To be announced"}</div>
       </div>
 
       <div className="mb-3">
         <strong>Certificate</strong>
-        <div>{certificate}</div>
+        <div>{certificate || "Certificate provided"}</div>
       </div>
 
       <div className="mb-4">
         <strong>Language</strong>
-        <div>{language}</div>
+        <div>{language || "English"}</div>
       </div>
 
-      <button className="btn btn-primary w-100 rounded-pill">
-        Enroll Now
-      </button>
+      <button className="btn btn-primary w-100 rounded-pill">Enroll Now</button>
     </div>
   );
 };

@@ -11,8 +11,9 @@ import EventsPage from "../pages/admin/EventsPage";
 import CampaignsPage from "../pages/admin/CampaignsPage";
 import DonationsPage from "../pages/admin/DonationsPage";
 import PartnersPage from "../pages/admin/PartnersPage";
-import VolunteersPage from "../pages/admin/VolunteersPage";
 import StoriesPage from "../pages/admin/StoriesPage";
+import DonorsPage from "../pages/admin/DonorsPage";
+import VolunteerAdminPage from "../pages/admin/VolunteerAdminPage";
 import ReportsPage from "../pages/admin/ReportsPage";
 import SettingsPage from "../pages/admin/SettingsPage";
 
@@ -34,13 +35,15 @@ function AdminRoutes() {
 
         <Route path="events" element={<EventsPage />} />
 
+        <Route path="donors" element={<DonorsPage />} />
+
         <Route path="campaigns" element={<CampaignsPage />} />
 
         <Route path="donations" element={<DonationsPage />} />
 
         <Route path="partners" element={<PartnersPage />} />
 
-        <Route path="volunteers" element={<VolunteersPage />} />
+        <Route path="volunteers" element={<VolunteerAdminPage />} />
 
         <Route path="stories" element={<StoriesPage />} />
 

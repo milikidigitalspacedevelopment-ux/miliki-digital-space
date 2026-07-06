@@ -58,15 +58,15 @@ function Navbar() {
     <>
       <TopBar />
 
-      <nav className="navbar bg-white shadow-sm sticky-top">
+      <nav className="navbar bg-white shadow-sm sticky-top" style={{ top: "0.35rem", paddingTop: "0.25rem", paddingBottom: "0.25rem" }}>
         <div className="container-fluid px-0 d-flex flex-column flex-lg-row align-items-center">
 
           {/* Upper Row */}
-          <div className="d-flex justify-content-between align-items-center w-100 py-2 px-3 flex-grow-1 bg-warning">
+          <div className="d-flex justify-content-between align-items-center w-100 py-2 px-3 flex-grow-1 bg-success text-white rounded-0" style={{ minHeight: "48px" }}>
             <div className="d-flex align-items-center">
               <button
                 type="button"
-                className="btn btn-success d-lg-none me-2 mobile-toggle-btn"
+                className="btn btn-light text-success d-lg-none me-2 mobile-toggle-btn"
                 onClick={toggleMenu}
                 aria-label={menuOpen ? "Close navigation" : "Open navigation"}
                 aria-expanded={menuOpen}
@@ -74,7 +74,7 @@ function Navbar() {
                 <List />
               </button>
 
-              <Link className="navbar-brand fw-bold text-success mb-0" to="/">
+              <Link className="navbar-brand fw-bold text-white mb-0" to="/">
                 Miliki Digital Space
               </Link>
             </div>
@@ -83,7 +83,7 @@ function Navbar() {
               <div className="d-none d-lg-flex align-items-center gap-2">
                 {isSuperAdmin ? (
                   <details className="position-relative">
-                    <summary className="btn btn-outline-dark" style={{ listStyle: "none" }}>
+                    <summary className="btn btn-outline-light" style={{ listStyle: "none" }}>
                       Dashboard
                     </summary>
                     <div className="position-absolute end-0 mt-2 bg-white border rounded shadow-sm p-2" style={{ minWidth: "180px", zIndex: 1000 }}>
@@ -95,26 +95,34 @@ function Navbar() {
                     </div>
                   </details>
                 ) : (
-                  <Link className="btn btn-outline-dark" to={dashboardPath}>
+                  <Link className="btn btn-outline-light" to={dashboardPath}>
                     Dashboard
                   </Link>
                 )}
-                <Link className="btn btn-outline-dark" to={getProfilePath()}>
+                <Link className="btn btn-outline-light" to={getProfilePath()}>
                   Profile
                 </Link>
-                <button className="btn btn-dark" onClick={handleLogout} type="button">
+                <button className="btn btn-light text-success" onClick={handleLogout} type="button">
                   Logout
                 </button>
               </div>
             ) : (
-              <Link className="btn btn-dark d-none d-lg-block" to="/register">
+              <Link className="btn btn-light text-success d-none d-lg-block" to="/register">
                 Join Now
               </Link>
             )}
           </div>
 
           {/* Lower Row */}
-          <MobileMenu open={menuOpen} setOpen={setMenuOpen} />
+          <MobileMenu
+            open={menuOpen}
+            setOpen={setMenuOpen}
+            isAuthenticated={isAuthenticated}
+            isSuperAdmin={isSuperAdmin}
+            dashboardPath={dashboardPath}
+            getProfilePath={getProfilePath}
+            handleLogout={handleLogout}
+          />
 
         </div>
       </nav>
@@ -122,4 +130,4 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+export default Navbar; 

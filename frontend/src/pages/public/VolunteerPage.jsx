@@ -1,399 +1,108 @@
+import { useState } from "react";
+import { ArrowRight, HeartHandshake, Users, Sparkles, CalendarDays, ShieldCheck, CheckCircle2 } from "lucide-react";
 import PageBanner from "../../components/common/PageBanner";
-import SectionHeader from "../../components/common/SectionHeader";
-
-import Breadcrumbs from "../../components/breadcrumbs/Breadcrumbs";
-
 import VolunteerForm from "../../components/forms/VolunteerForm";
 
-import EventsSection from "../../components/sections/EventsSection";
-import TestimonialsSection from "../../components/sections/TestimonialsSection";
-import GallerySection from "../../components/sections/GallerySection";
-import FAQSection from "../../components/sections/FAQSection";
-import CTASection from "../../components/sections/CTASection";
-
 function VolunteerPage() {
+  const [submitted, setSubmitted] = useState(false);
+
   return (
     <>
-      <PageBanner
-        title="Become a Volunteer"
-        subtitle="Use your skills and passion to create meaningful change."
-      />
-
-      <div className="container mt-4">
-        <Breadcrumbs />
-      </div>
-
-      {/* HERO */}
+      <PageBanner title="Volunteer With Miliki" subtitle="Serve your community through mentorship, events, and digital support." />
 
       <section className="container py-5">
-        <div
-          className="overflow-hidden shadow"
-          style={{
-            borderRadius: "100px 30px 100px 30px",
-            background: "linear-gradient(135deg,#198754,#0d6efd)",
-          }}
-        >
-          <div className="row align-items-center">
-
-            <div className="col-lg-7 p-5 text-white">
-
-              <span className="badge bg-light text-success px-3 py-2 mb-3">
-                JOIN OUR COMMUNITY
-              </span>
-
-              <h1 className="display-4 fw-bold mb-4">
-                Make A Difference Through Volunteering
-              </h1>
-
-              <p className="lead">
-                Join hundreds of passionate volunteers helping
-                communities through education, mentorship,
-                technology and outreach programs.
-              </p>
-
-              <div className="row mt-5">
-
-                <div className="col-4">
-                  <h2 className="fw-bold">800+</h2>
-                  <small>Volunteers</small>
-                </div>
-
-                <div className="col-4">
-                  <h2 className="fw-bold">120</h2>
-                  <small>Events</small>
-                </div>
-
-                <div className="col-4">
-                  <h2 className="fw-bold">54</h2>
-                  <small>Communities</small>
-                </div>
-
+        <div className="row g-4 align-items-center">
+          <div className="col-lg-7">
+            <span className="badge bg-success-subtle text-success px-3 py-2 rounded-pill mb-3">Community impact</span>
+            <h1 className="display-5 fw-bold mb-3">Give your time and skills to create lasting change.</h1>
+            <p className="lead text-muted">Join a growing network of volunteers supporting learners, events, outreach, and technology programs across Kenya.</p>
+            <div className="d-flex flex-wrap gap-3 mt-4">
+              <div className="bg-light rounded-4 px-3 py-3">
+                <div className="fw-bold">800+</div>
+                <small className="text-muted">Volunteers</small>
+              </div>
+              <div className="bg-light rounded-4 px-3 py-3">
+                <div className="fw-bold">120+</div>
+                <small className="text-muted">Community events</small>
+              </div>
+              <div className="bg-light rounded-4 px-3 py-3">
+                <div className="fw-bold">54</div>
+                <small className="text-muted">Communities reached</small>
               </div>
             </div>
+          </div>
 
-            <div className="col-lg-5">
-              <img
-                src="https://images.unsplash.com/photo-1559027615-cd4628902d4a"
-                alt="Volunteer"
-                className="w-100"
-                style={{
-                  minHeight: 500,
-                  objectFit: "cover",
-                }}
-              />
+          <div className="col-lg-5">
+            <div className="card border-0 shadow rounded-4 p-4">
+              <div className="d-flex align-items-center mb-3">
+                <div className="rounded-circle bg-success text-white p-3 me-3"><HeartHandshake size={24} /></div>
+                <div>
+                  <h4 className="fw-bold mb-0">Why volunteer?</h4>
+                  <p className="text-muted mb-0">Your skills can power real impact.</p>
+                </div>
+              </div>
+              <ul className="list-unstyled">
+                <li className="d-flex align-items-center mb-2"><CheckCircle2 size={18} className="text-success me-2" />Mentor learners and youth</li>
+                <li className="d-flex align-items-center mb-2"><CheckCircle2 size={18} className="text-success me-2" />Support community events</li>
+                <li className="d-flex align-items-center mb-2"><CheckCircle2 size={18} className="text-success me-2" />Use your tech or admin skills</li>
+                <li className="d-flex align-items-center"><CheckCircle2 size={18} className="text-success me-2" />Gain leadership experience</li>
+              </ul>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* WHY VOLUNTEER */}
-
-      <section className="container py-5">
-
-        <SectionHeader
-          title="Why Volunteer With Us?"
-          subtitle="Become part of a growing movement creating lasting impact."
-        />
-
-        <div className="row g-4 mt-3">
-
-          <div className="col-md-6 col-xl-3">
-            <div
-              className="bg-white shadow-sm p-5 h-100"
-              style={{
-                borderRadius: "80px 25px 80px 25px",
-              }}
-            >
-              <h5 className="fw-bold text-success">
-                Community Impact
-              </h5>
-
-              <p className="text-muted mb-0">
-                Transform lives and strengthen communities.
-              </p>
-            </div>
-          </div>
-
-          <div className="col-md-6 col-xl-3">
-            <div
-              className="bg-white shadow-sm p-5 h-100"
-              style={{
-                borderRadius: "25px 80px 25px 80px",
-              }}
-            >
-              <h5 className="fw-bold text-primary">
-                Grow Skills
-              </h5>
-
-              <p className="text-muted mb-0">
-                Develop leadership and teamwork abilities.
-              </p>
-            </div>
-          </div>
-
-          <div className="col-md-6 col-xl-3">
-            <div
-              className="bg-white shadow-sm p-5 h-100"
-              style={{
-                borderRadius: "80px 25px 80px 25px",
-              }}
-            >
-              <h5 className="fw-bold text-warning">
-                Networking
-              </h5>
-
-              <p className="text-muted mb-0">
-                Connect with professionals and mentors.
-              </p>
-            </div>
-          </div>
-
-          <div className="col-md-6 col-xl-3">
-            <div
-              className="bg-white shadow-sm p-5 h-100"
-              style={{
-                borderRadius: "25px 80px 25px 80px",
-              }}
-            >
-              <h5 className="fw-bold text-danger">
-                Recognition
-              </h5>
-
-              <p className="text-muted mb-0">
-                Receive certificates and appreciation.
-              </p>
-            </div>
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* OPPORTUNITIES */}
-
-      <section
-        className="py-5"
-        style={{
-          background: "#f8fafc",
-        }}
-      >
-
+      <section className="py-5 bg-light">
         <div className="container">
-
-          <SectionHeader
-            title="Volunteer Opportunities"
-            subtitle="Find where your passion and talents can contribute."
-          />
-
-          <div className="row g-4 mt-3">
-
-            <div className="col-md-6 col-lg-3">
-
-              <div
-                className="bg-white shadow-sm p-5 h-100"
-                style={{
-                  borderRadius: "80px 25px 80px 25px",
-                }}
-              >
-                <h5 className="fw-bold text-success">
-                  Teaching
-                </h5>
-
-                <p className="text-muted mb-0">
-                  Mentor and educate young learners.
-                </p>
+          <div className="row g-4">
+            <div className="col-md-4">
+              <div className="card border-0 shadow-sm rounded-4 h-100 p-4">
+                <div className="rounded-circle bg-primary text-white p-3 mb-3" style={{ width: 48, height: 48 }}><Users size={22} /></div>
+                <h5 className="fw-bold">Community service</h5>
+                <p className="text-muted mb-0">Support outreach, training sessions, and direct community programs.</p>
               </div>
-
             </div>
-
-            <div className="col-md-6 col-lg-3">
-
-              <div
-                className="bg-white shadow-sm p-5 h-100"
-                style={{
-                  borderRadius: "25px 80px 25px 80px",
-                }}
-              >
-                <h5 className="fw-bold text-primary">
-                  Events
-                </h5>
-
-                <p className="text-muted mb-0">
-                  Support outreach and community programs.
-                </p>
+            <div className="col-md-4">
+              <div className="card border-0 shadow-sm rounded-4 h-100 p-4">
+                <div className="rounded-circle bg-warning text-white p-3 mb-3" style={{ width: 48, height: 48 }}><Sparkles size={22} /></div>
+                <h5 className="fw-bold">Grow your skills</h5>
+                <p className="text-muted mb-0">Develop confidence, communication, and leadership through hands-on service.</p>
               </div>
-
             </div>
-
-            <div className="col-md-6 col-lg-3">
-
-              <div
-                className="bg-white shadow-sm p-5 h-100"
-                style={{
-                  borderRadius: "80px 25px 80px 25px",
-                }}
-              >
-                <h5 className="fw-bold text-warning">
-                  Technology
-                </h5>
-
-                <p className="text-muted mb-0">
-                  Apply digital skills to support projects.
-                </p>
+            <div className="col-md-4">
+              <div className="card border-0 shadow-sm rounded-4 h-100 p-4">
+                <div className="rounded-circle bg-info text-white p-3 mb-3" style={{ width: 48, height: 48 }}><CalendarDays size={22} /></div>
+                <h5 className="fw-bold">Flexible opportunities</h5>
+                <p className="text-muted mb-0">Choose events, mentorship, or administrative support that fits your availability.</p>
               </div>
-
             </div>
-
-            <div className="col-md-6 col-lg-3">
-
-              <div
-                className="bg-white shadow-sm p-5 h-100"
-                style={{
-                  borderRadius: "25px 80px 25px 80px",
-                }}
-              >
-                <h5 className="fw-bold text-danger">
-                  Administration
-                </h5>
-
-                <p className="text-muted mb-0">
-                  Assist with planning and operations.
-                </p>
-              </div>
-
-            </div>
-
           </div>
-
         </div>
-
       </section>
-
-      {/* APPLICATION PROCESS */}
 
       <section className="container py-5">
-
-        <SectionHeader
-          title="How To Join"
-          subtitle="Becoming a volunteer is simple."
-        />
-
-        <div className="row g-4 mt-4">
-
-          <div className="col-md-3">
-
-            <div className="shadow-sm bg-white p-4 text-center h-100 rounded-5">
-              <h1 className="text-success">1</h1>
-              <h5>Apply</h5>
-              <p className="text-muted">
-                Submit your volunteer application.
-              </p>
+        <div className="card border-0 shadow rounded-4 overflow-hidden">
+          <div className="row g-0">
+            <div className="col-lg-7 p-5">
+              <span className="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">Volunteer application</span>
+              <h2 className="fw-bold mb-3">Ready to join?</h2>
+              <p className="text-muted">Tell us about your interests and availability. We’ll review your application and get back to you shortly.</p>
+              <div className="d-flex align-items-center text-success mt-3"><ShieldCheck size={18} className="me-2" />Trusted process with quick follow-up.</div>
             </div>
-
-          </div>
-
-          <div className="col-md-3">
-
-            <div className="shadow-sm bg-white p-4 text-center h-100 rounded-5">
-              <h1 className="text-primary">2</h1>
-              <h5>Review</h5>
-              <p className="text-muted">
-                Our team reviews your information.
-              </p>
+            <div className="col-lg-5 bg-dark text-white p-5 d-flex flex-column justify-content-center">
+              <h4 className="fw-bold mb-3">Start your impact journey</h4>
+              <p className="text-light-emphasis">Fill out the form and become part of our volunteer network.</p>
+              <button className="btn btn-success rounded-pill px-4 align-self-start" onClick={() => setSubmitted(true)}>
+                {submitted ? "Application received" : "Apply now"} <ArrowRight size={18} className="ms-2" />
+              </button>
             </div>
-
           </div>
-
-          <div className="col-md-3">
-
-            <div className="shadow-sm bg-white p-4 text-center h-100 rounded-5">
-              <h1 className="text-warning">3</h1>
-              <h5>Training</h5>
-              <p className="text-muted">
-                Attend orientation and onboarding.
-              </p>
-            </div>
-
-          </div>
-
-          <div className="col-md-3">
-
-            <div className="shadow-sm bg-white p-4 text-center h-100 rounded-5">
-              <h1 className="text-danger">4</h1>
-              <h5>Serve</h5>
-              <p className="text-muted">
-                Start creating impact.
-              </p>
-            </div>
-
-          </div>
-
         </div>
-
       </section>
 
-      {/* FORM */}
-
-      <section
-        className="py-5"
-        style={{
-          background: "#f8fafc",
-        }}
-      >
-
-        <div className="container">
-
-          <div className="row justify-content-center">
-
-            <div className="col-xl-8">
-
-              <div
-                className="bg-white shadow p-5"
-                style={{
-                  borderRadius: "100px 30px 100px 30px",
-                }}
-              >
-                <SectionHeader
-                  title="Volunteer Application"
-                  subtitle="Fill in the form below and our team will contact you."
-                />
-
-                <VolunteerForm />
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
+      <section className="container pb-5">
+        <VolunteerForm />
       </section>
-
-      {/* EVENTS */}
-
-      <EventsSection />
-
-      {/* TESTIMONIALS */}
-
-      <TestimonialsSection />
-
-      {/* GALLERY */}
-
-      <GallerySection />
-
-      {/* FAQ */}
-
-      <FAQSection />
-
-      {/* CTA */}
-
-      <CTASection
-        title="Ready To Make An Impact?"
-        subtitle="Join hundreds of volunteers creating change every day."
-        buttonText="Become A Volunteer"
-        buttonLink="/volunteer"
-      />
     </>
   );
 }

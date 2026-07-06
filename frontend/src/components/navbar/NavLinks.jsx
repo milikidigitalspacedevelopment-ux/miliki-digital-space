@@ -20,7 +20,7 @@ function NavLinks() {
         <li key={link.path} className="nav-item">
           <NavLink
             to={link.path}
-            className="nav-link fw-semibold px-3 py-2 text-dark d-inline-block"
+            className="nav-link fw-bold px-3 py-2 text-success d-inline-block"
           >
             {link.name}
           </NavLink>

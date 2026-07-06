@@ -354,6 +354,7 @@ JWT_REFRESH_SECRET=very-strong-random-string
 ZOHO_CLIENT_ID=production-zoho-id
 ZOHO_CLIENT_SECRET=production-zoho-secret
 FRONTEND_URL=https://miliki.app
+CORS_ORIGINS=https://miliki.app
 ```
 
 ### Deployment Commands

@@ -131,6 +131,16 @@ CREATE TABLE IF NOT EXISTS courses (
 	updated_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Course Requirements
+CREATE TABLE IF NOT EXISTS course_requirements (
+	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
+	requirement TEXT NOT NULL,
+	order_position INTEGER DEFAULT 0,
+	created_at TIMESTAMPTZ DEFAULT now(),
+	updated_at TIMESTAMPTZ DEFAULT now()
+);
+
 -- Lessons
 CREATE TABLE IF NOT EXISTS lessons (
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -415,6 +425,9 @@ CREATE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug);
 -- Courses
 CREATE INDEX IF NOT EXISTS idx_courses_program_id ON courses(program_id);
 CREATE INDEX IF NOT EXISTS idx_courses_category_id ON courses(category_id);
+
+-- Course requirements
+CREATE INDEX IF NOT EXISTS idx_course_requirements_course_id ON course_requirements(course_id);
 
 -- Lessons
 CREATE INDEX IF NOT EXISTS idx_lessons_course_id ON lessons(course_id);

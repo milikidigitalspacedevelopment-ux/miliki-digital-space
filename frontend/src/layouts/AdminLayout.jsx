@@ -6,6 +6,7 @@ import {
   FaNewspaper,
   FaCalendarAlt,
   FaHandsHelping,
+  FaUserTie,
   FaDonate,
   FaBullhorn,
   FaChartLine,
@@ -50,6 +51,11 @@ function AdminLayout() {
       label: "Volunteers",
       path: "/admin/volunteers",
       icon: <FaHandsHelping />
+    },
+    {
+      label: "Donors",
+      path: "/admin/donors",
+      icon: <FaUserTie />
     },
     {
       label: "Donations",

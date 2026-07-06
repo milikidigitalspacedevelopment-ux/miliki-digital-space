@@ -1,6 +1,37 @@
 import asyncHandler from "express-async-handler";
 import { pool } from "../config/db.js";
 
+const slugify = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+const resolveCategoryId = async (value) => {
+  if (!value) return null;
+
+  const normalized = String(value).trim();
+  if (!normalized) return null;
+
+  const existing = await pool.query(
+    "SELECT id FROM categories WHERE LOWER(name) = LOWER($1)",
+    [normalized]
+  );
+
+  if (existing.rows[0]) {
+    return existing.rows[0].id;
+  }
+
+  const slug = slugify(normalized) || `category-${Date.now()}`;
+  const inserted = await pool.query(
+    "INSERT INTO categories (name, slug, description) VALUES ($1, $2, $3) RETURNING id",
+    [normalized, slug, `Auto-created category for ${normalized}`]
+  );
+
+  return inserted.rows[0].id;
+};
+
 export const getPrograms = asyncHandler(async (req, res) => {
   const { q, status, category, page = 1, perPage = 20 } = req.query;
   const offset = (Number(page) - 1) * Number(perPage);
@@ -67,12 +98,18 @@ export const createProgram = asyncHandler(async (req, res) => {
     title,
     description,
     category_id,
+    category,
+    category_name,
     created_by,
     status,
     start_date,
     end_date,
     image_url,
   } = req.body;
+
+  const resolvedCategoryId = category_id || category || category_name
+    ? await resolveCategoryId(category_id || category || category_name)
+    : null;
 
   const result = await pool.query(
     `INSERT INTO programs
@@ -82,7 +119,7 @@ export const createProgram = asyncHandler(async (req, res) => {
     [
       title,
       description,
-      category_id || null,
+      resolvedCategoryId || null,
       created_by || null,
       status || "draft",
       start_date || null,
@@ -100,12 +137,19 @@ export const updateProgram = asyncHandler(async (req, res) => {
     title,
     description,
     category_id,
+    category,
+    category_name,
     created_by,
     status,
     start_date,
     end_date,
     image_url,
   } = req.body;
+
+  const hasCategoryValue = Object.prototype.hasOwnProperty.call(req.body, "category_id") || Object.prototype.hasOwnProperty.call(req.body, "category") || Object.prototype.hasOwnProperty.call(req.body, "category_name");
+  const resolvedCategoryId = hasCategoryValue
+    ? await resolveCategoryId(category_id || category || category_name)
+    : null;
 
   const result = await pool.query(
     `UPDATE programs
@@ -123,7 +167,7 @@ export const updateProgram = asyncHandler(async (req, res) => {
     [
       title,
       description,
-      category_id,
+      resolvedCategoryId,
       created_by,
       status,
       start_date,

@@ -9,45 +9,57 @@ import {
   Trash2,
   Users,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import programService from "../../services/programService";
 
-function ProgramsPage() {
-  const navigate = useNavigate();
+const emptyForm = {
+  title: "",
+  description: "",
+  category: "",
+  status: "draft",
+  start_date: "",
+  end_date: "",
+  image_url: "",
+};
 
+function ProgramsPage() {
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
 
-  // UI state
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true);
-        const data = await programService.getPrograms();
-        setPrograms(Array.isArray(data) ? data : []);
-      } catch (err) {
-        console.error(err);
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState("create");
+  const [selectedProgram, setSelectedProgram] = useState(null);
+  const [form, setForm] = useState(emptyForm);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-    load();
+  const loadPrograms = async () => {
+    try {
+      setLoading(true);
+      const data = await programService.getPrograms();
+      setPrograms(Array.isArray(data) ? data : []);
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError("Unable to load programs right now.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPrograms();
   }, []);
 
-  // Derived lists
   const getProgramStatus = (program) =>
-    program.status ||
-    (program.featured ? "Active" : "Draft") ||
-    "Unknown";
+    program.status || (program.featured ? "Active" : "Draft") || "Unknown";
 
   const getProgramCategory = (program) =>
     program.category || program.category_name || "Uncategorized";
@@ -59,11 +71,7 @@ function ProgramsPage() {
     program.participants || program.enrollments || 0;
 
   const categories = useMemo(() => {
-    const set = new Set(
-      programs
-        .map((p) => getProgramCategory(p))
-        .filter(Boolean)
-    );
+    const set = new Set(programs.map((p) => getProgramCategory(p)).filter(Boolean));
     return ["", ...Array.from(set)];
   }, [programs]);
 
@@ -104,45 +112,134 @@ function ProgramsPage() {
     return { totalPrograms, participants, active, completed };
   }, [programs]);
 
-  const handleView = (id) => navigate(`/admin/programs/${id}`);
-  const handleEdit = (id) => navigate(`/admin/programs/${id}/edit`);
+  const resetModal = () => {
+    setIsModalOpen(false);
+    setModalMode("create");
+    setSelectedProgram(null);
+    setForm(emptyForm);
+    setError(null);
+    setSuccessMessage("");
+  };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Delete this program?")) return;
+  const openCreateModal = () => {
+    setModalMode("create");
+    setSelectedProgram(null);
+    setForm(emptyForm);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (program) => {
+    setModalMode("edit");
+    setSelectedProgram(program);
+    setForm({
+      title: program.title || "",
+      description: program.description || "",
+      category: program.category || program.category_name || "",
+      status: program.status || "draft",
+      start_date: program.start_date || "",
+      end_date: program.end_date || "",
+      image_url: program.image_url || "",
+    });
+    setIsModalOpen(true);
+  };
+
+  const openViewModal = (program) => {
+    setModalMode("view");
+    setSelectedProgram(program);
+    setIsModalOpen(true);
+  };
+
+  const handleFieldChange = (event) => {
+    const { name, value } = event.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
     try {
-      // call service if available, otherwise simulate removal
-      if (typeof programService.deleteProgram === "function") {
-        await programService.deleteProgram(id);
-      }
-      setPrograms((prev) => prev.filter((p) => p.id !== id));
+      setUploadingImage(true);
+      const response = await programService.uploadProgramImage(file);
+      const uploadedUrl = response?.url || response?.secure_url || response?.data?.url || "";
+      setForm((prev) => ({ ...prev, image_url: uploadedUrl }));
+      setSuccessMessage("Image uploaded successfully.");
     } catch (err) {
       console.error(err);
-      alert("Failed to delete program");
+      setError("Image upload failed. Please try again.");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!form.title.trim()) {
+      setError("A title is required.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const payload = {
+        title: form.title.trim(),
+        description: form.description.trim(),
+        category: form.category.trim(),
+        status: form.status,
+        start_date: form.start_date || null,
+        end_date: form.end_date || null,
+        image_url: form.image_url || null,
+      };
+
+      if (modalMode === "edit" && selectedProgram?.id) {
+        const updated = await programService.updateProgram(selectedProgram.id, payload);
+        setPrograms((prev) => prev.map((program) => (program.id === updated.id ? updated : program)));
+        setSuccessMessage("Program updated successfully.");
+      } else {
+        const created = await programService.createProgram(payload);
+        setPrograms((prev) => [created, ...prev]);
+        setSuccessMessage("Program created successfully.");
+      }
+
+      resetModal();
+      await loadPrograms();
+    } catch (err) {
+      console.error(err);
+      setError(err?.response?.data?.message || "Unable to save program.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this program?")) return;
+
+    try {
+      await programService.deleteProgram(id);
+      setPrograms((prev) => prev.filter((program) => program.id !== id));
+      setSuccessMessage("Program deleted successfully.");
+    } catch (err) {
+      console.error(err);
+      setError("Failed to delete program.");
     }
   };
 
   return (
     <div className="container-fluid py-4">
-      {/* Header */}
-
       <div className="d-flex flex-wrap justify-content-between align-items-center mb-4">
         <div>
-          <h2 className="fw-bold mb-1">
-            Programs Management
-          </h2>
-
-          <p className="text-muted mb-0">
-            Create, organize and monitor all programs.
-          </p>
+          <h2 className="fw-bold mb-1">Programs Management</h2>
+          <p className="text-muted mb-0">Create, organize and monitor all programs.</p>
         </div>
 
-        <button className="btn btn-success rounded-pill px-4">
+        <button className="btn btn-success rounded-pill px-4" onClick={openCreateModal}>
           <Plus size={18} className="me-2" />
           Add Program
         </button>
       </div>
 
-      {/* Statistics */}
+      {error ? <div className="alert alert-danger rounded-4" role="alert">{error}</div> : null}
+      {successMessage ? <div className="alert alert-success rounded-4" role="alert">{successMessage}</div> : null}
 
       <div className="row g-4 mb-4">
         <div className="col-lg-3 col-md-6">
@@ -158,7 +255,6 @@ function ProgramsPage() {
 
                 <div>
                   <small className="text-muted">Total Programs</small>
-
                   <h3 className="fw-bold mb-0">{stats.totalPrograms}</h3>
                 </div>
               </div>
@@ -179,7 +275,6 @@ function ProgramsPage() {
 
                 <div>
                   <small className="text-muted">Participants</small>
-
                   <h3 className="fw-bold mb-0">{stats.participants.toLocaleString()}</h3>
                 </div>
               </div>
@@ -200,7 +295,6 @@ function ProgramsPage() {
 
                 <div>
                   <small className="text-muted">Active Programs</small>
-
                   <h3 className="fw-bold mb-0">{stats.active}</h3>
                 </div>
               </div>
@@ -221,7 +315,6 @@ function ProgramsPage() {
 
                 <div>
                   <small className="text-muted">Completed</small>
-
                   <h3 className="fw-bold mb-0">{stats.completed}</h3>
                 </div>
               </div>
@@ -229,8 +322,6 @@ function ProgramsPage() {
           </div>
         </div>
       </div>
-
-      {/* Search + Filters */}
 
       <div className="card border-0 shadow-sm rounded-5 mb-4">
         <div className="card-body">
@@ -246,8 +337,8 @@ function ProgramsPage() {
                   className="form-control border-start-0"
                   placeholder="Search by title, id or category..."
                   value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
+                  onChange={(event) => {
+                    setSearchTerm(event.target.value);
                     setPage(1);
                   }}
                 />
@@ -258,14 +349,14 @@ function ProgramsPage() {
               <select
                 className="form-select"
                 value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value);
+                onChange={(event) => {
+                  setStatusFilter(event.target.value);
                   setPage(1);
                 }}
               >
-                {statuses.map((s) => (
-                  <option key={s} value={s}>
-                    {s || "All Statuses"}
+                {statuses.map((status) => (
+                  <option key={status} value={status}>
+                    {status || "All Statuses"}
                   </option>
                 ))}
               </select>
@@ -275,14 +366,14 @@ function ProgramsPage() {
               <select
                 className="form-select"
                 value={categoryFilter}
-                onChange={(e) => {
-                  setCategoryFilter(e.target.value);
+                onChange={(event) => {
+                  setCategoryFilter(event.target.value);
                   setPage(1);
                 }}
               >
-                {categories.map((c) => (
-                  <option key={c} value={c}>
-                    {c || "All Categories"}
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category || "All Categories"}
                   </option>
                 ))}
               </select>
@@ -304,8 +395,6 @@ function ProgramsPage() {
           </div>
         </div>
       </div>
-
-      {/* Table */}
 
       <div className="card border-0 shadow-sm rounded-5">
         <div className="card-body table-responsive">
@@ -342,8 +431,8 @@ function ProgramsPage() {
                         getProgramStatus(program) === "Active"
                           ? "bg-success"
                           : getProgramStatus(program) === "Completed"
-                          ? "bg-primary"
-                          : "bg-warning"
+                            ? "bg-primary"
+                            : "bg-warning"
                       }`}
                     >
                       {getProgramStatus(program)}
@@ -353,14 +442,14 @@ function ProgramsPage() {
                     <div className="d-flex gap-2 flex-wrap">
                       <button
                         className="btn btn-sm btn-outline-primary rounded-pill"
-                        onClick={() => handleView(program.id)}
+                        onClick={() => openViewModal(program)}
                       >
                         <Eye size={16} />
                       </button>
 
                       <button
                         className="btn btn-sm btn-outline-success rounded-pill"
-                        onClick={() => handleEdit(program.id)}
+                        onClick={() => openEditModal(program)}
                       >
                         <Pencil size={16} />
                       </button>
@@ -385,7 +474,9 @@ function ProgramsPage() {
 
         <div className="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
           <div>
-            <small className="text-muted">Showing {Math.min((page-1)*perPage+1, total)} - {Math.min(page*perPage, total)} of {total} programs</small>
+            <small className="text-muted">
+              Showing {Math.min((page - 1) * perPage + 1, total)} - {Math.min(page * perPage, total)} of {total} programs
+            </small>
           </div>
 
           <div className="d-flex gap-2 align-items-center">
@@ -393,7 +484,10 @@ function ProgramsPage() {
               className="form-select form-select-sm"
               style={{ width: 80 }}
               value={perPage}
-              onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1); }}
+              onChange={(event) => {
+                setPerPage(Number(event.target.value));
+                setPage(1);
+              }}
             >
               <option value={5}>5</option>
               <option value={10}>10</option>
@@ -401,12 +495,127 @@ function ProgramsPage() {
             </select>
 
             <div className="btn-group">
-              <button className="btn btn-sm btn-outline-secondary" disabled={page<=1} onClick={() => setPage((p) => Math.max(1, p-1))}>Prev</button>
-              <button className="btn btn-sm btn-outline-secondary" disabled={page>=totalPages} onClick={() => setPage((p) => Math.min(totalPages, p+1))}>Next</button>
+              <button className="btn btn-sm btn-outline-secondary" disabled={page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>
+                Prev
+              </button>
+              <button className="btn btn-sm btn-outline-secondary" disabled={page >= totalPages} onClick={() => setPage((value) => Math.min(totalPages, value + 1))}>
+                Next
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {isModalOpen ? (
+        <div className="modal fade show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div className="modal-content rounded-4 border-0 shadow">
+              <div className="modal-header border-0">
+                <h5 className="modal-title fw-bold">
+                  {modalMode === "view"
+                    ? selectedProgram?.title || "Program details"
+                    : modalMode === "edit"
+                      ? "Edit Program"
+                      : "Add Program"}
+                </h5>
+                <button type="button" className="btn-close" onClick={resetModal}></button>
+              </div>
+
+              {modalMode === "view" && selectedProgram ? (
+                <div className="modal-body">
+                  <div className="row g-3">
+                    <div className="col-12">
+                      {selectedProgram.image_url ? (
+                        <img src={selectedProgram.image_url} alt={selectedProgram.title} className="img-fluid rounded-4 mb-3" style={{ maxHeight: 220, objectFit: "cover" }} />
+                      ) : null}
+                    </div>
+                    <div className="col-12">
+                      <h6 className="fw-bold">Title</h6>
+                      <p>{selectedProgram.title}</p>
+                    </div>
+                    <div className="col-12">
+                      <h6 className="fw-bold">Description</h6>
+                      <p>{selectedProgram.description || "No description provided."}</p>
+                    </div>
+                    <div className="col-12">
+                      <h6 className="fw-bold">Category</h6>
+                      <p>{getProgramCategory(selectedProgram)}</p>
+                    </div>
+                    <div className="col-12">
+                      <h6 className="fw-bold">Status</h6>
+                      <p>{getProgramStatus(selectedProgram)}</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit}>
+                  <div className="modal-body">
+                    <div className="row g-3">
+                      <div className="col-12">
+                        <label className="form-label">Title</label>
+                        <input type="text" className="form-control" name="title" value={form.title} onChange={handleFieldChange} required />
+                      </div>
+
+                      <div className="col-12">
+                        <label className="form-label">Description</label>
+                        <textarea className="form-control" rows="4" name="description" value={form.description} onChange={handleFieldChange} />
+                      </div>
+
+                      <div className="col-md-6">
+                        <label className="form-label">Category</label>
+                        <input type="text" className="form-control" name="category" value={form.category} onChange={handleFieldChange} placeholder="e.g. Education" />
+                      </div>
+
+                      <div className="col-md-6">
+                        <label className="form-label">Status</label>
+                        <select className="form-select" name="status" value={form.status} onChange={handleFieldChange}>
+                          <option value="draft">Draft</option>
+                          <option value="Active">Active</option>
+                          <option value="Completed">Completed</option>
+                        </select>
+                      </div>
+
+                      <div className="col-md-6">
+                        <label className="form-label">Start Date</label>
+                        <input type="date" className="form-control" name="start_date" value={form.start_date} onChange={handleFieldChange} />
+                      </div>
+
+                      <div className="col-md-6">
+                        <label className="form-label">End Date</label>
+                        <input type="date" className="form-control" name="end_date" value={form.end_date} onChange={handleFieldChange} />
+                      </div>
+
+                      <div className="col-12">
+                        <label className="form-label">Program Image</label>
+                        <div className="border rounded-4 p-3">
+                          <input type="file" accept="image/*" className="form-control" onChange={handleImageUpload} />
+                          <div className="mt-2 text-muted small">
+                            {uploadingImage ? "Uploading image..." : "Upload an image to Cloudinary and attach it to this program."}
+                          </div>
+                          {form.image_url ? (
+                            <div className="mt-3">
+                              <img src={form.image_url} alt="Program preview" className="img-fluid rounded-3" style={{ maxHeight: 180, objectFit: "cover" }} />
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="modal-footer border-0">
+                    <button type="button" className="btn btn-outline-secondary" onClick={resetModal}>
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn btn-success" disabled={saving || uploadingImage}>
+                      {saving ? "Saving..." : modalMode === "edit" ? "Save Changes" : "Create Program"}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-import PageBanner from "../../components/common/PageBanner";
 import SearchBar from "../../components/filters/SearchBar";
 import CategoryPills from "../../components/filters/CategoryPills";
 import SortDropdown from "../../components/filters/SortDropdown";
@@ -14,6 +13,7 @@ import courseService from "../../services/courseService";
 function CoursesPage() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const courseTrackRef = useRef(null);
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
@@ -23,14 +23,47 @@ function CoursesPage() {
     loadCourses();
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const track = courseTrackRef.current;
+    if (!track) return;
+
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    if (!isMobile) return;
+
+    const scrollStep = () => {
+      const card = track.querySelector(".course-card-wrapper");
+      if (!card) return;
+
+      const gap = 14;
+      const offset = card.getBoundingClientRect().width + gap;
+      const maxScroll = track.scrollWidth - track.clientWidth;
+
+      if (maxScroll <= 0) return;
+
+      const nextScroll = track.scrollLeft + offset;
+      const target = nextScroll >= maxScroll ? 0 : nextScroll;
+
+      track.scrollTo({ left: target, behavior: "smooth" });
+    };
+
+    const intervalId = window.setInterval(scrollStep, 3200);
+    return () => window.clearInterval(intervalId);
+  }, [courses]);
+
   const loadCourses = async () => {
     try {
       setLoading(true);
 
       const response = await courseService.getCourses();
       const payload = Array.isArray(response) ? response : response?.data || [];
+      const publicCourses = (Array.isArray(payload) ? payload : []).filter((course) => {
+        const status = (course?.status || "").toLowerCase();
+        return !["draft", "archived", "closed"].includes(status);
+      });
 
-      setCourses(payload);
+      setCourses(publicCourses);
     } catch (error) {
       console.error(error);
       setCourses([]);
@@ -54,12 +87,12 @@ function CoursesPage() {
 
     data = data.filter((course) => {
       const title = (course.title || "").toLowerCase();
-      const instructor = (course.instructor_name || course.instructor || "").toLowerCase();
+      const description = (course.short_description || course.description || course.overview || "").toLowerCase();
       const categoryName = (course.category_name || course.category || "").toLowerCase();
       const query = search.toLowerCase();
 
       return (
-        (title.includes(query) || instructor.includes(query) || categoryName.includes(query)) &&
+        (title.includes(query) || description.includes(query) || categoryName.includes(query)) &&
         (category === "All" || categoryName === category.toLowerCase())
       );
     });
@@ -93,11 +126,6 @@ function CoursesPage() {
 
   return (
     <>
-      <PageBanner
-        title="Courses"
-        subtitle="Learn practical skills and transform your future."
-      />
-
       <section className="container py-5">
 
         <div className="row g-4 mb-5">
@@ -135,7 +163,7 @@ function CoursesPage() {
             message="Try adjusting your filters."
           />
         ) : (
-          <div className="course-grid">
+          <div className="course-grid public-courses-grid" ref={courseTrackRef}>
             {filteredCourses.map((course) => (
               <div className="course-card-wrapper" key={course.id}>
                 <CourseCard course={course} />

@@ -18,7 +18,15 @@ import {
 } from "react-bootstrap-icons";
 import { useEffect, useRef } from "react";
 
-function MobileMenu({ open, setOpen }) {
+function MobileMenu({
+  open,
+  setOpen,
+  isAuthenticated,
+  isSuperAdmin,
+  dashboardPath,
+  getProfilePath,
+  handleLogout,
+}) {
   useEffect(() => {
     console.log("[dev] MobileMenu open ->", open);
   }, [open]);
@@ -59,7 +67,7 @@ function MobileMenu({ open, setOpen }) {
       {/* Mobile Sidebar (collapsible) */}
       <div
         ref={sidebarRef}
-        className={`d-lg-none mobile-sidebar bg-primary text-white ${open ? "open" : "closed"}`}
+        className={`d-lg-none mobile-sidebar bg-success text-white ${open ? "open" : "closed"}`}
         aria-hidden={!open}
       >
         <div className="sidebar-inner w-100 d-flex flex-column align-items-stretch">
@@ -74,6 +82,28 @@ function MobileMenu({ open, setOpen }) {
                   {open ? <X /> : <List />}
                 </button>
               </div>
+
+          <div className="px-3 pb-2 pt-1">
+            <div className="d-grid gap-2">
+              {isAuthenticated ? (
+                <>
+                  <Link className="btn btn-light text-success btn-sm" to={dashboardPath}>
+                    Dashboard
+                  </Link>
+                  <Link className="btn btn-outline-light btn-sm" to={getProfilePath()}>
+                    Profile
+                  </Link>
+                  <button className="btn btn-dark btn-sm" type="button" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <Link className="btn btn-light text-success btn-sm" to="/login">
+                  Login
+                </Link>
+              )}
+            </div>
+          </div>
 
           <ul className="nav flex-column mb-0 mt-2">
             {sidebarLinks.map((link) => {
@@ -117,7 +147,7 @@ function MobileMenu({ open, setOpen }) {
 
       {/* Mobile Bottom Bar (main items, full-width, no scroll) */}
       <div
-        className="d-lg-none position-fixed bottom-0 start-0 w-100 bg-primary shadow-sm border-top mobile-bottom-bar"
+        className="d-lg-none position-fixed bottom-0 start-0 w-100 bg-success shadow-sm border-top mobile-bottom-bar"
         style={{ zIndex: 1060 }}
       >
         <div className="d-flex align-items-center justify-content-around py-2">
@@ -150,6 +180,6 @@ function MobileMenu({ open, setOpen }) {
       </div>
     </>
   );
-}
+} 
 
 export default MobileMenu;
