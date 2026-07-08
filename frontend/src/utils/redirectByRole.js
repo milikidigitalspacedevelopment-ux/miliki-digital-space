@@ -14,7 +14,7 @@ export function getDashboardPathByRole(role) {
       return "/donor";
 
     case ROLES.VOLUNTEER:
-      return "/volunteer";
+      return "/volunteer/dashboard";
 
     case ROLES.PARTNER:
       return "/partner";

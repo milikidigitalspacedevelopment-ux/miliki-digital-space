@@ -58,23 +58,24 @@ function Navbar() {
     <>
       <TopBar />
 
-      <nav className="navbar bg-white shadow-sm sticky-top" style={{ top: "0.35rem", paddingTop: "0.25rem", paddingBottom: "0.25rem" }}>
+      <nav className="navbar bg-white shadow-sm fixed-top" style={{ paddingTop: "0.25rem", paddingBottom: "0.25rem", zIndex: 1080 }}>
         <div className="container-fluid px-0 d-flex flex-column flex-lg-row align-items-center">
 
           {/* Upper Row */}
-          <div className="d-flex justify-content-between align-items-center w-100 py-2 px-3 flex-grow-1 bg-success text-white rounded-0" style={{ minHeight: "48px" }}>
+          <div className="d-flex justify-content-between align-items-center w-100 py-2 px-3 flex-grow-1 bg-white text-dark rounded-0 border-bottom" style={{ minHeight: "48px" }}>
             <div className="d-flex align-items-center">
               <button
                 type="button"
-                className="btn btn-light text-success d-lg-none me-2 mobile-toggle-btn"
+                className="btn btn-outline-secondary d-lg-none me-2 mobile-toggle-btn"
                 onClick={toggleMenu}
                 aria-label={menuOpen ? "Close navigation" : "Open navigation"}
                 aria-expanded={menuOpen}
+                style={{ display: "inline-flex" }}
               >
                 <List />
               </button>
 
-              <Link className="navbar-brand fw-bold text-white mb-0" to="/">
+              <Link className="navbar-brand fw-bold text-dark mb-0" to="/">
                 Miliki Digital Space
               </Link>
             </div>
@@ -83,7 +84,7 @@ function Navbar() {
               <div className="d-none d-lg-flex align-items-center gap-2">
                 {isSuperAdmin ? (
                   <details className="position-relative">
-                    <summary className="btn btn-outline-light" style={{ listStyle: "none" }}>
+                    <summary className="btn btn-outline-secondary" style={{ listStyle: "none" }}>
                       Dashboard
                     </summary>
                     <div className="position-absolute end-0 mt-2 bg-white border rounded shadow-sm p-2" style={{ minWidth: "180px", zIndex: 1000 }}>
@@ -95,19 +96,19 @@ function Navbar() {
                     </div>
                   </details>
                 ) : (
-                  <Link className="btn btn-outline-light" to={dashboardPath}>
+                  <Link className="btn btn-outline-secondary" to={dashboardPath}>
                     Dashboard
                   </Link>
                 )}
-                <Link className="btn btn-outline-light" to={getProfilePath()}>
+                <Link className="btn btn-outline-secondary" to={getProfilePath()}>
                   Profile
                 </Link>
-                <button className="btn btn-light text-success" onClick={handleLogout} type="button">
+                <button className="btn btn-outline-secondary" onClick={handleLogout} type="button">
                   Logout
                 </button>
               </div>
             ) : (
-              <Link className="btn btn-light text-success d-none d-lg-block" to="/register">
+              <Link className="btn btn-outline-success d-none d-lg-block" to="/login">
                 Join Now
               </Link>
             )}

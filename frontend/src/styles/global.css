@@ -8,6 +8,11 @@
     box-sizing:border-box;
 }
 
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 body{
     font-family:system-ui,-apple-system,sans-serif;
     color:var(--text-color);
@@ -70,6 +75,7 @@ ul{
 }
 
 /* Ensure the fixed bottom bar doesn't cover page content too aggressively */
+/* When top bars are fixed we need to offset page content so it's not occluded */
 body{
     padding-bottom:64px; /* matches approximate height of mobile nav */
 }
@@ -81,19 +87,24 @@ body{
     left:0;
     top:0;
     bottom:64px; /* leave space for bottom nav */
-    width:200px; /* fixed width, hidden by transform */
+    width:260px;
     transform:translateX(-100%);
-    z-index:1050;
+    z-index:1200;
     padding-top:8px;
     display:flex;
     align-items:flex-start;
     justify-content:flex-start;
-    overflow:hidden;
+    overflow-y:auto;
+    overflow-x:hidden;
     transition:transform .28s ease;
+    visibility:hidden;
+    opacity:0;
 }
 
 .mobile-sidebar.open{
     transform:translateX(0);
+    visibility:visible;
+    opacity:1;
 }
 
 .mobile-sidebar .nav-link{
@@ -166,6 +177,56 @@ body{
     font-size:12px;
 }
 
+/* Collapsed mobile bottom bar: only show icons and move slightly downward */
+.mobile-bottom-bar{
+    transition: transform .18s ease, padding .18s ease;
+}
+
+.mobile-bottom-bar .main-bottom-link{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+}
+
+.mobile-bottom-bar .main-bottom-link svg{
+    font-size:1.2rem;
+}
+
+.mobile-bottom-bar .main-bottom-link div{
+    transition: opacity .12s ease, height .12s ease, font-size .12s ease;
+}
+
+.mobile-bottom-bar.collapsed{
+    transform: translateY(6px);
+    padding-top:6px;
+    padding-bottom:6px;
+}
+
+.mobile-bottom-bar.collapsed .main-bottom-link div{
+    opacity:0;
+    height:0;
+    font-size:0;
+    line-height:0;
+    overflow:hidden;
+    pointer-events:none;
+}
+
+/* Fixed TopBar and Navbar stacking */
+.topbar{
+    position:relative;
+    z-index:1;
+}
+
+.navbar{
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    z-index:1080;
+}
+
 /* Testimonials marquee */
 .testimonial-marquee-wrapper{
     overflow:hidden;
@@ -203,6 +264,30 @@ body{
     padding:1rem;
     border-radius:1rem;
     box-shadow:0 14px 35px rgba(0,0,0,0.08);
+}
+
+.course-sidebar-card {
+    position: sticky;
+    top: 100px;
+}
+
+.course-sidebar-card .enroll-btn {
+    display: block;
+}
+
+@media (min-width: 1200px) {
+    .course-sidebar-card .enroll-btn {
+        display: none;
+    }
+
+    .course-enroll-fixed {
+        display: block;
+        position: fixed;
+        right: 2rem;
+        bottom: 2rem;
+        width: 220px;
+        z-index: 1050;
+    }
 }
 
 .gallery-album h3{
@@ -403,7 +488,8 @@ body{
 
 .public-courses-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    /* Desktop: 4 cards per row */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1.25rem;
     margin: 0;
     overflow-x: hidden;
@@ -417,56 +503,115 @@ body{
     padding: 0;
 }
 
+/* Make wrapper allow shadow overflow and enable per-card stagger */
+.public-courses-grid .course-card-wrapper {
+    position: relative;
+    overflow: visible;
+}
+
+/* Hanging / floating animation */
+.course-card {
+    animation: floatHang 6s ease-in-out infinite;
+    transform-origin: center top;
+}
+
+@keyframes floatHang {
+    0% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-6px) rotate(-0.6deg); }
+    50% { transform: translateY(0) rotate(0deg); }
+    75% { transform: translateY(-4px) rotate(0.4deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+}
+
+/* Soft shadow beneath each card to sell the 'hanging' effect */
+.public-courses-grid .course-card-wrapper::after{
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 6px;
+    width: 60%;
+    height: 10px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 50%;
+    filter: blur(8px);
+    transition: transform 0.35s ease, opacity 0.35s ease;
+    opacity: 0.9;
+    pointer-events: none;
+    animation: shadowPulse 6s ease-in-out infinite;
+}
+
+@keyframes shadowPulse {
+    0% { transform: translateX(-50%) scale(1); opacity: 0.9 }
+    50% { transform: translateX(-50%) scale(0.9); opacity: 0.6 }
+    100% { transform: translateX(-50%) scale(1); opacity: 0.9 }
+}
+
+/* Stagger animation for natural motion */
+.public-courses-grid .course-card-wrapper:nth-child(6n+1) .course-card{ animation-delay: 0s; }
+.public-courses-grid .course-card-wrapper:nth-child(6n+2) .course-card{ animation-delay: 0.18s; }
+.public-courses-grid .course-card-wrapper:nth-child(6n+3) .course-card{ animation-delay: 0.36s; }
+.public-courses-grid .course-card-wrapper:nth-child(6n+4) .course-card{ animation-delay: 0.08s; }
+.public-courses-grid .course-card-wrapper:nth-child(6n+5) .course-card{ animation-delay: 0.28s; }
+.public-courses-grid .course-card-wrapper:nth-child(6n+6) .course-card{ animation-delay: 0.44s; }
+
+/* Hover increases lift and shadow */
+.course-card:hover,
+.course-card:focus-within {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 26px 48px rgba(31,34,69,0.16);
+    border-color: rgba(63,81,181,0.2);
+}
+.public-courses-grid .course-card-wrapper:hover::after{
+    transform: translateX(-50%) scale(1.05);
+    opacity: 1;
+}
+
 @media (max-width: 991px) {
     .public-courses-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 767px) {
     .public-courses-grid {
-        display: flex;
-        grid-template-columns: none;
+        display: grid;
+        grid-template-columns: 1fr; /* one card per row on small devices */
         gap: 0.85rem;
-        overflow-x: auto;
-        padding-bottom: 1rem;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: none;
-    }
-
-    .public-courses-grid::-webkit-scrollbar {
-        display: none;
+        overflow-x: hidden;
+        padding-bottom: 0.75rem;
+        justify-items: stretch;
     }
 
     .public-courses-grid .course-card-wrapper {
-        flex: 0 0 min(78vw, 280px);
-        max-width: min(78vw, 280px);
-        min-width: min(78vw, 280px);
-        scroll-snap-align: start;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        margin: 0;
     }
 
     .course-card-media {
-        min-height: 150px;
+        min-height: 75px; /* half height for smaller cards */
     }
 
     .course-card-body {
-        padding: 1rem;
-        gap: 0.75rem;
+        padding: 0.6rem;
+        gap: 0.5rem;
     }
 
     .course-card-title {
-        font-size: 1.05rem;
-        line-height: 1.2;
+        font-size: 0.65rem;
+        line-height: 1.1;
     }
 
     .course-card-text {
-        min-height: 2.5rem;
-        font-size: 0.92rem;
+        min-height: 1.2rem;
+        font-size: 0.46rem;
     }
 
     .course-card-footer {
-        padding: 0 1rem 1rem;
-        gap: 0.7rem;
+        padding: 0 0.6rem 0.6rem;
+        gap: 0.45rem;
     }
 }
 
@@ -475,32 +620,36 @@ body{
         gap: 0.85rem;
     }
 
-    .course-card-wrapper {
-        min-width: 190px;
-        max-width: 190px;
+    .course-grid .course-card-wrapper,
+    .public-courses-grid .course-card-wrapper {
+        min-width: 100%;
+        max-width: 100%;
+        width: 100%;
     }
 
     .course-card-media {
-        min-height: 160px;
+        min-height: 80px;
     }
 }
 
 @media (max-width: 480px) {
     .public-courses-grid .course-card-wrapper {
-        flex: 0 0 84vw;
-        max-width: 84vw;
-        min-width: 84vw;
+        flex: 0 0 100%;
+        max-width: 100%;
+        min-width: 100%;
+        width: 100%;
     }
 
     .course-card-media {
-        min-height: 132px;
+        min-height: 66px;
     }
 }
 
 @media (max-width: 420px) {
-    .course-card-wrapper {
-        min-width: 170px;
-        max-width: 170px;
+    .public-courses-grid .course-card-wrapper {
+        min-width: 100%;
+        max-width: 100%;
+        width: 100%;
     }
 }
 

@@ -31,6 +31,8 @@ function MobileMenu({
     console.log("[dev] MobileMenu open ->", open);
   }, [open]);
   const sidebarRef = useRef(null);
+  const bottomRef = useRef(null);
+  const lastScroll = useRef(typeof window !== "undefined" ? window.pageYOffset : 0);
 
   // (no body padding toggle) sidebar will overlay content without shifting body
 
@@ -48,6 +50,26 @@ function MobileMenu({
     }
     document.addEventListener("click", handleClick);
     return () => document.removeEventListener("click", handleClick);
+  }, []);
+
+  // Collapse bottom bar to icons when user scrolls up, expand when scrolls down
+  useEffect(() => {
+    function onScroll() {
+      const current = window.pageYOffset || 0;
+      const bottom = bottomRef.current || document.querySelector(".mobile-bottom-bar");
+      if (!bottom) return;
+      if (current < lastScroll.current) {
+        // user scrolled up -> collapse labels and move bar slightly down
+        bottom.classList.add("collapsed");
+      } else if (current > lastScroll.current) {
+        // user scrolled down -> show labels
+        bottom.classList.remove("collapsed");
+      }
+      lastScroll.current = current;
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   // Define which links live where. Home must be only at bottom per request.
@@ -147,6 +169,7 @@ function MobileMenu({
 
       {/* Mobile Bottom Bar (main items, full-width, no scroll) */}
       <div
+        ref={bottomRef}
         className="d-lg-none position-fixed bottom-0 start-0 w-100 bg-success shadow-sm border-top mobile-bottom-bar"
         style={{ zIndex: 1060 }}
       >

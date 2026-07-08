@@ -125,11 +125,27 @@ CREATE TABLE IF NOT EXISTS courses (
 	category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
 	level TEXT DEFAULT 'beginner',
 	status TEXT DEFAULT 'draft',
+	popularity INTEGER DEFAULT 0,
 	duration_hours INTEGER,
 	image_url TEXT,
 	created_at TIMESTAMPTZ DEFAULT now(),
 	updated_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- Course Enrollments
+CREATE TABLE IF NOT EXISTS course_enrollments (
+	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
+	user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+	enrolled_at TIMESTAMPTZ DEFAULT now(),
+	status TEXT DEFAULT 'active',
+	created_at TIMESTAMPTZ DEFAULT now(),
+	updated_at TIMESTAMPTZ DEFAULT now(),
+	UNIQUE(course_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_course_enrollments_course_id ON course_enrollments(course_id);
+CREATE INDEX IF NOT EXISTS idx_course_enrollments_user_id ON course_enrollments(user_id);
 
 -- Course Requirements
 CREATE TABLE IF NOT EXISTS course_requirements (

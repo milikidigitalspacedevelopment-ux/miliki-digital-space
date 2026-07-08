@@ -13,32 +13,32 @@ function VolunteerLayout() {
   const links = [
     {
       label: "Dashboard",
-      path: "/volunteer",
+      path: "/volunteer/dashboard",
       icon: <FaHome />
     },
     {
-      label: "Activities",
-      path: "/volunteer/activities",
+      label: "Tasks",
+      path: "/volunteer/dashboard/tasks",
       icon: <FaTasks />
     },
     {
       label: "Events",
-      path: "/volunteer/events",
+      path: "/volunteer/dashboard/events",
       icon: <FaCalendarAlt />
     },
     {
       label: "Volunteer Hours",
-      path: "/volunteer/hours",
+      path: "/volunteer/dashboard",
       icon: <FaClock />
     },
     {
       label: "Certificates",
-      path: "/volunteer/certificates",
+      path: "/volunteer/dashboard",
       icon: <FaCertificate />
     },
     {
       label: "Profile",
-      path: "/volunteer/profile",
+      path: "/volunteer/dashboard",
       icon: <FaUser />
     }
   ];

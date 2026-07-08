@@ -9,7 +9,11 @@ import {
   updateCourseRequirement,
   deleteCourseRequirement,
   reorderCourseRequirements,
+  enrollCourse,
+  getCourseEnrollmentStatus,
 } from "../controllers/courseController.js";
+import { trackCoursePopularity } from "../controllers/trackController.js";
+import { authenticate } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -18,6 +22,12 @@ router.get("/:id", getCourse);
 router.post("/", createCourse);
 router.put("/:id", updateCourse);
 router.delete("/:id", deleteCourse);
+
+// Track popularity (views/enrollments)
+router.post("/:id/track-popularity", trackCoursePopularity);
+
+router.post("/:id/enroll", authenticate, enrollCourse);
+router.get("/:id/enrollment", authenticate, getCourseEnrollmentStatus);
 
 // Requirements routes
 router.post("/:courseId/requirements", addCourseRequirement);

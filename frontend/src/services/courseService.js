@@ -54,6 +54,21 @@ export const enrollCourse = async (id) => {
   return response.data;
 };
 
+export const getCourseEnrollmentStatus = async (id) => {
+  const response = await api.get(`/courses/${id}/enrollment`);
+  return response.data?.enrolled ?? false;
+};
+
+export const trackPopularity = async (id) => {
+  try {
+    const response = await api.post(`/courses/${id}/track-popularity`);
+    return response.data;
+  } catch (err) {
+    // don't block UI if tracking fails
+    return null;
+  }
+};
+
 export const addCourseRequirement = async (courseId, payload) => {
   const response = await api.post(`/courses/${courseId}/requirements`, payload);
   return normalizeItem(response.data ?? response);
@@ -88,6 +103,7 @@ const courseService = {
   deleteCourse,
   uploadCourseImage,
   enrollCourse,
+  trackPopularity,
   addCourseRequirement,
   updateCourseRequirement,
   deleteCourseRequirement,

@@ -24,10 +24,10 @@ function EventDetailsPage() {
         ...eventData,
         title: eventData?.title || "Untitled event",
         image: eventData?.image || "/images/event.jpg",
-        date: eventData?.date || eventData?.event_date || "TBD",
-        time: eventData?.time || "To be announced",
-        location: eventData?.location || "TBD",
-        description: eventData?.description || "Join us for this community event.",
+        date: eventData?.date || eventData?.event_date || eventData?.start_date || "TBD",
+        time: eventData?.time || eventData?.start_time || "To be announced",
+        location: eventData?.location || eventData?.venue || "TBD",
+        description: eventData?.description || eventData?.details || "Join us for this community event.",
       });
     } catch (error) {
       console.error(error);

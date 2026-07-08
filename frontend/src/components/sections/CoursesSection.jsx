@@ -21,24 +21,22 @@ function CoursesSection() {
   return (
     <section className="py-5 bg-light">
       <div className="container">
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
+          <div>
+            <h2 className="fw-bold mb-2">Popular Courses</h2>
+            <p className="text-muted mb-0">
+              Explore a curated selection of practical courses designed to help you grow.
+            </p>
+          </div>
+        </div>
 
-        <h2 className="fw-bold mb-4">
-          Popular Courses
-        </h2>
-
-        <div className="row">
-
-          {courses.slice(0, 6).map((course) => (
-            <div
-              className="col-lg-4 mb-4"
-              key={course.id}
-            >
+        <div className="course-grid public-courses-grid">
+          {courses.slice(0, 8).map((course) => (
+            <div className="course-card-wrapper" key={course.id || course.slug || course.title}>
               <CourseCard course={course} />
             </div>
           ))}
-
         </div>
-
       </div>
     </section>
   );

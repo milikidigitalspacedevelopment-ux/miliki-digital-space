@@ -28,6 +28,7 @@ async function login(req, res, next) {
       refreshToken: result.refreshToken,
     });
   } catch (err) {
+    console.log("Error in authController login:", err.message);
     next(err);
   }
 }

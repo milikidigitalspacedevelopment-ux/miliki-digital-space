@@ -142,7 +142,7 @@ function CoursesPage() {
 
         return matchesSearch && matchesStatus && matchesLevel;
       })
-      .sort((a, b) => b.id - a.id);
+      .sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
   }, [courses, searchTerm, statusFilter, levelFilter]);
 
   const total = filteredCourses.length;
@@ -780,6 +780,7 @@ function CoursesPage() {
                 <th>Instructor</th>
                 <th>Category</th>
                 <th>Duration</th>
+                <th>Popularity</th>
                 <th>Status</th>
                 <th width="180">Actions</th>
               </tr>
@@ -787,7 +788,7 @@ function CoursesPage() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={6} className="text-center py-4">
+                  <td colSpan={7} className="text-center py-4">
                     Loading courses...
                   </td>
                 </tr>
@@ -799,6 +800,7 @@ function CoursesPage() {
                   <td>{getCourseInstructor(course)}</td>
                   <td>{getCourseCategory(course)}</td>
                   <td>{getCourseDuration(course)}</td>
+                  <td>{course.popularity ?? 0}</td>
                   <td>
                     <span className={`badge ${["published", "active"].includes((course.status || "").toLowerCase()) ? "bg-success" : "bg-warning"}`}>
                       {getCourseStatus(course)}

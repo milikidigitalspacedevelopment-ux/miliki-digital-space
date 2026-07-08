@@ -9,13 +9,8 @@ import TasksPage from "../pages/volunteer/TasksPage";
 function VolunteerRoutes() {
   return (
     <>
-      <Route path="/volunteer" element={<VolunteerLayout />}>
+      <Route path="/volunteer/dashboard" element={<VolunteerLayout />}>
         <Route index element={<DashboardPage />} />
-
-        <Route
-          path="dashboard"
-          element={<DashboardPage />}
-        />
 
         <Route
           path="events"

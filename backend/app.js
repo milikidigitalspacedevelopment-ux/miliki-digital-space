@@ -24,17 +24,20 @@ import blogRoutes from "./routes/blogRoutes.js";
 import storyRoutes from "./routes/storyRoutes.js";
 import contentRoutes from "./routes/contentRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
+import faqRoutes from "./routes/faqRoutes.js";
 import { notFoundHandler, errorHandler } from "./middlewares/errorMiddleware.js";
 
 dotenv.config();
 
 const app = express();
 
-const rawCorsOrigins = process.env.CORS_ORIGINS || process.env.FRONTEND_URL || "http://localhost:5173";
-const allowedCorsOrigins = rawCorsOrigins
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const defaultCorsOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"];
+const rawCorsOrigins = [process.env.CORS_ORIGINS, process.env.CORS_ORIGIN, process.env.FRONTEND_URL]
+  .filter(Boolean)
+  .join(",");
+
+const allowedCorsOrigins = [...new Set([...defaultCorsOrigins, ...rawCorsOrigins.split(",").map((origin) => origin.trim()).filter(Boolean)])];
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -47,6 +50,7 @@ const corsOptions = {
 };
 
 app.use(helmet());
+app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
 app.use(json());
 app.use(urlencoded({ extended: true }));
@@ -78,6 +82,8 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/stories", storyRoutes);
 app.use("/api/content", contentRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/contacts", contactRoutes);
+app.use("/api/faqs", faqRoutes);
 
 // Uploads
 app.use("/api/uploads", uploadRoutes);

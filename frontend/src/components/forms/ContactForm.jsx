@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import api from "../../services/api";
 
 function ContactForm() {
   const {
@@ -11,17 +12,11 @@ function ContactForm() {
 
   const onSubmit = async (data) => {
     try {
-
-      console.log(data);
-
-      // await contactService.sendMessage(data);
-
+      await api.post("/contacts", data);
       toast.success("Message sent successfully");
-
       reset();
-
     } catch (error) {
-      toast.error("Failed to send message");
+      toast.error(error?.response?.data?.message || "Failed to send message");
     }
   };
 

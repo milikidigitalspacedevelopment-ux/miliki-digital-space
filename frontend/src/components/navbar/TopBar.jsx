@@ -7,7 +7,7 @@ import {
 
 function TopBar() {
   return (
-    <div className="bg-primary text-light small py-2">
+    <div className="topbar bg-primary text-light small py-2">
       <div className="container">
 
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 flex-wrap">

@@ -8,10 +8,21 @@ const CourseSidebarCard = ({
   deliveryMode,
   schedule,
   nextIntake,
+  isEnrolled = false,
+  enrolling = false,
+  onEnroll,
+  enrollError,
+  enrollSuccess,
 }) => {
+  const buttonText = isEnrolled
+    ? "Enrolled"
+    : enrolling
+    ? "Enrolling..."
+    : "Enroll Now";
+
   return (
     <div
-      className="p-4 shadow"
+      className="p-4 shadow course-sidebar-card"
       style={{
         borderRadius: "30px",
         position: "sticky",
@@ -57,7 +68,31 @@ const CourseSidebarCard = ({
         <div>{language || "English"}</div>
       </div>
 
-      <button className="btn btn-primary w-100 rounded-pill">Enroll Now</button>
+      <button
+        className="btn btn-primary w-100 rounded-pill enroll-btn"
+        onClick={onEnroll}
+        disabled={isEnrolled || enrolling}
+      >
+        {buttonText}
+      </button>
+
+      {enrollError ? (
+        <div className="mt-3 text-danger small">{enrollError}</div>
+      ) : null}
+
+      {enrollSuccess ? (
+        <div className="mt-3 text-success small">{enrollSuccess}</div>
+      ) : null}
+
+      <div className="course-enroll-fixed d-none d-lg-block">
+        <button
+          className="btn btn-primary w-100 rounded-pill"
+          onClick={onEnroll}
+          disabled={isEnrolled || enrolling}
+        >
+          {buttonText}
+        </button>
+      </div>
     </div>
   );
 };

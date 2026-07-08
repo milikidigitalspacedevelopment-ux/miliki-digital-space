@@ -9,9 +9,10 @@ function EventCard({ event }) {
     <div className="card shadow-sm h-100 border-0">
 
       <img
-        src={event.image}
+        src={event.image || "/images/event.jpg"}
         alt={event.title}
         className="card-img-top"
+        style={{ height: "220px", objectFit: "cover" }}
       />
 
       <div className="card-body">
@@ -34,7 +35,7 @@ function EventCard({ event }) {
 
         <Link
           className="btn btn-outline-success w-100"
-          to={`/events/${event.slug}`}
+          to={`/events/${event.id || event.slug}`}
         >
           Event Details
         </Link>

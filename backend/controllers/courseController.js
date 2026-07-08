@@ -87,6 +87,7 @@ export const listCourses = asyncHandler(async (req, res) => {
       c.next_intake,
       c.featured,
       c.image_url,
+      c.popularity,
       c.created_at,
 
       u.name AS instructor_name,
@@ -156,6 +157,8 @@ export const listCourses = asyncHandler(async (req, res) => {
 
   query += `
     ORDER BY
+
+      c.popularity DESC,
 
       c.featured DESC,
 
@@ -262,6 +265,66 @@ export const getCourse = asyncHandler(async (req, res) => {
     res.status(500).json({
       message: "An error occurred while fetching the course.",
     });
+  }
+});
+
+const getUserId = (req) => req.user?.userId || req.user?.id;
+
+export const getCourseEnrollmentStatus = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = getUserId(req);
+
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const result = await pool.query(
+    `SELECT EXISTS (SELECT 1 FROM course_enrollments WHERE course_id = $1 AND user_id = $2) AS enrolled`,
+    [id, userId]
+  );
+
+  res.json({ enrolled: result.rows[0]?.enrolled === true });
+});
+
+export const enrollCourse = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = getUserId(req);
+
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const courseResult = await pool.query(
+    `SELECT id FROM courses WHERE id = $1`,
+    [id]
+  );
+
+  if (!courseResult.rows.length) {
+    return res.status(404).json({ message: "Course not found" });
+  }
+
+  try {
+    const insertResult = await pool.query(
+      `INSERT INTO course_enrollments (course_id, user_id, enrolled_at) VALUES ($1, $2, NOW()) RETURNING id`,
+      [id, userId]
+    );
+
+    await pool.query(
+      `UPDATE courses SET popularity = COALESCE(popularity, 0) + 1 WHERE id = $1`,
+      [id]
+    );
+
+    res.status(201).json({
+      message: "Enrolled successfully",
+      enrollmentId: insertResult.rows[0].id,
+    });
+  } catch (error) {
+    if (error.code === "23505") {
+      return res.status(409).json({ message: "You are already enrolled in this course." });
+    }
+
+    console.error("Error enrolling user in course:", error.message);
+    res.status(500).json({ message: "An error occurred while enrolling in the course." });
   }
 });
 

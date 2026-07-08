@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import Breadcrumbs from "../../components/breadcrumbs/Breadcrumbs";
 import CourseSidebarCard from "../../components/sidebars/CourseSidebarCard";
@@ -7,6 +7,7 @@ import CourseCard from "../../components/cards/CourseCard";
 import CTASection from "../../components/sections/CTASection";
 
 import courseService from "../../services/courseService";
+import useAuth from "../../hooks/useAuth";
 
 const getSummaryText = (value, maxLength = 160) => {
   if (!value) return "More details coming soon.";
@@ -64,15 +65,31 @@ const normalizeList = (value) => {
 
 function CourseDetailsPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const [course, setCourse] = useState(null);
   const [relatedCourses, setRelatedCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
+  const [enrollError, setEnrollError] = useState(null);
+  const [enrollSuccess, setEnrollSuccess] = useState(null);
 
   useEffect(() => {
     loadCourse();
   }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+
+    if (isAuthenticated) {
+      loadEnrollment();
+    } else {
+      setIsEnrolled(false);
+    }
+  }, [id, isAuthenticated]);
 
   const loadCourse = async () => {
     setLoading(true);
@@ -114,6 +131,9 @@ function CourseDetailsPage() {
 
       setCourse(normalizedCourse);
 
+      // Track popularity (fire-and-forget)
+      courseService.trackPopularity(id).catch(() => null);
+
       const coursesResponse = await courseService.getCourses({ status: "published" });
       const publishedCourses = Array.isArray(coursesResponse)
         ? coursesResponse
@@ -136,6 +156,43 @@ function CourseDetailsPage() {
       setCourse(null);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadEnrollment = async () => {
+    try {
+      const enrolled = await courseService.getCourseEnrollmentStatus(id);
+      setIsEnrolled(Boolean(enrolled));
+    } catch (err) {
+      console.warn("Unable to load enrollment status", err);
+      setIsEnrolled(false);
+    }
+  };
+
+  const handleEnroll = async () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
+    setEnrolling(true);
+    setEnrollError(null);
+    setEnrollSuccess(null);
+
+    try {
+      await courseService.enrollCourse(id);
+      setIsEnrolled(true);
+      setEnrollSuccess("You are now enrolled in this course.");
+    } catch (err) {
+      const serverMessage = err?.response?.data?.message;
+      if (err?.response?.status === 409) {
+        setIsEnrolled(true);
+        setEnrollError(serverMessage || "You are already enrolled in this course.");
+      } else {
+        setEnrollError(serverMessage || "Unable to enroll at this time.");
+      }
+    } finally {
+      setEnrolling(false);
     }
   };
 
@@ -276,6 +333,11 @@ function CourseDetailsPage() {
               deliveryMode={course.delivery_mode}
               schedule={course.class_schedule}
               nextIntake={course.next_intake}
+              isEnrolled={isEnrolled}
+              enrolling={enrolling}
+              onEnroll={handleEnroll}
+              enrollError={enrollError}
+              enrollSuccess={enrollSuccess}
             />
           </div>
         </div>

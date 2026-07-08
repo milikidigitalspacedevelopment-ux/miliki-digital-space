@@ -17,7 +17,7 @@ function CoursesPage() {
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
-  const [sortBy, setSortBy] = useState("newest");
+  const [sortBy, setSortBy] = useState("popular");
 
   useEffect(() => {
     loadCourses();
@@ -107,8 +107,8 @@ function CoursesPage() {
       case "popular":
         data.sort(
           (a, b) =>
-            (b.students_count || b.students || 0) -
-            (a.students_count || a.students || 0)
+            (b.popularity || 0) -
+            (a.popularity || 0)
         );
         break;
 
@@ -127,6 +127,11 @@ function CoursesPage() {
   return (
     <>
       <section className="container py-5">
+
+        <div className="mb-4">
+          <h2 className="fw-bold">Explore our most popular courses</h2>
+          <p className="text-muted">Join thousands of learners — pick a course to build practical skills and advance your career.</p>
+        </div>
 
         <div className="row g-4 mb-5">
 

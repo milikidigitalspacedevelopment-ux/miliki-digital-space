@@ -315,7 +315,10 @@ function RegisterPage() {
   };
 
   return (
-    <div className="auth-page d-flex align-items-center justify-content-center">
+    <div className="auth-page d-flex align-items-center justify-content-center position-relative">
+      <Link to="/" className="btn btn-outline-secondary btn-sm position-absolute top-0 end-0 m-3 z-1">
+        Home
+      </Link>
       <div className="row g-0 align-items-stretch w-100">
         <div className="col-lg-6 d-none d-lg-flex auth-hero-panel">
           <div className="auth-hero-content">

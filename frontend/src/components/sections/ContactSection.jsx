@@ -20,8 +20,8 @@ function ContactSection() {
 
             <ul className="list-unstyled">
               <li>Email: info@miliki.org</li>
-              <li>Phone: +254 XXX XXX XXX</li>
-              <li>Nairobi, Kenya</li>
+              <li>Phone: +254790171131</li>
+              <li>Location: Nairobi, Kenya</li>
             </ul>
 
           </div>
