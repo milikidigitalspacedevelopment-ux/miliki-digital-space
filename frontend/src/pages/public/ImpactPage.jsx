@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
 
 import PageBanner from "../../components/common/PageBanner";
 import SectionHeader from "../../components/common/SectionHeader";
@@ -12,6 +13,7 @@ import BarChartComponent from "../../components/charts/BarChartComponent";
 import AreaChartComponent from "../../components/charts/AreaChartComponent";
 
 import StoryCard from "../../components/cards/StoryCard";
+import heroImage from "../../assets/hero.png";
 
 import TestimonialsSection from "../../components/sections/TestimonialsSection";
 import GallerySection from "../../components/sections/GallerySection";
@@ -53,6 +55,31 @@ function ImpactPage() {
     }
   };
 
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  // derive chart-friendly data from stats/content when backend doesn't provide explicit series
+  const pieData = stats
+    ? [
+        { name: "Graduates", value: Number(stats.graduates) || 0 },
+        { name: "Jobs", value: Number(stats.jobsCreated) || 0 },
+        { name: "Communities", value: Number(stats.communities) || 0 },
+      ]
+    : [];
+
+  const barData = Array.isArray(content.highlights)
+    ? content.highlights.map((h, idx) => ({ category: h.label || `Item ${idx + 1}`, value: Number(String(h.value).replace(/[^0-9]/g, "")) || 0 }))
+    : [];
+
+  const areaData = stats?.growthOverTime || [];
+
+  const fmt = (val, fallback = "—") => {
+    if (val === null || val === undefined) return fallback;
+    if (typeof val === "number") return val.toLocaleString();
+    return String(val);
+  };
+
   return (
     <>
       <PageBanner
@@ -64,45 +91,38 @@ function ImpactPage() {
 
       {/* HERO */}
 
-      <section className="container py-5">
+      <section className="container py-4">
 
         <div
           className="shadow overflow-hidden"
           style={{
-            borderRadius: "80px 25px 80px 25px",
-            background:
-              "linear-gradient(135deg,#0d6efd,#198754)",
+            borderRadius: "50px",
+            background: "linear-gradient(135deg, #198754, #28a745)",
           }}
         >
 
-          <div className="row align-items-center">
+          <div className="row align-items-center g-0">
 
-            <div className="col-lg-7 p-5 text-white">
+            <div className="col-lg-7 p-4 p-lg-5 text-white">
 
-              <span className="badge bg-light text-success px-3 py-2 mb-3">
+              <span className="badge bg-light text-primary px-3 py-2 mb-3">
                 IMPACT REPORT
               </span>
 
-              <h1 className="display-4 fw-bold mb-4">
-
+              <h1 className="display-5 fw-bold mb-3">
                 {content.hero?.title || "Creating Opportunities"}
-                <br />
-                {content.hero?.subtitle ? content.hero.subtitle : "and Changing Lives"}
-
               </h1>
 
-              <p className="lead">
-
+              <p className="lead mb-4">
                 {content.hero?.subtitle || "Through education, entrepreneurship, digital skills and community empowerment, we continue building sustainable futures for thousands of individuals and families."}
-
               </p>
 
-              <div className="row mt-5">
+              <div className="row gy-3">
 
                 <div className="col-6 col-md-4 mb-4">
 
                   <h2 className="fw-bold">
-                    {stats?.years || 8}+
+                    {stats?.years ? `${stats.years}+` : content.highlights[0]?.value || "—"}
                   </h2>
 
                   <small>
@@ -114,7 +134,7 @@ function ImpactPage() {
                 <div className="col-6 col-md-4 mb-4">
 
                   <h2 className="fw-bold">
-                    {stats?.communities || 54}
+                    {fmt(stats?.communities, content.highlights[1]?.value || "—")}
                   </h2>
 
                   <small>
@@ -126,7 +146,7 @@ function ImpactPage() {
                 <div className="col-6 col-md-4">
 
                   <h2 className="fw-bold">
-                    {stats?.graduates || 6200}
+                    {fmt(stats?.graduates, content.highlights[2]?.value || "—")}
                   </h2>
 
                   <small>
@@ -142,11 +162,12 @@ function ImpactPage() {
             <div className="col-lg-5">
 
               <img
-                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
+                src={heroImage}
                 alt="Impact"
                 className="w-100"
                 style={{
-                  minHeight: 500,
+                  minHeight: 360,
+                  height: "100%",
                   objectFit: "cover",
                 }}
               />
@@ -179,7 +200,7 @@ function ImpactPage() {
               }}
             >
               <h2 className="fw-bold text-success">
-                {stats?.livesImpacted?.toLocaleString()}
+                {fmt(stats?.livesImpacted)}
               </h2>
 
               <p className="text-muted mb-0">
@@ -199,7 +220,7 @@ function ImpactPage() {
               }}
             >
               <h2 className="fw-bold text-primary">
-                {stats?.graduates?.toLocaleString()}
+                {fmt(stats?.graduates)}
               </h2>
 
               <p className="text-muted mb-0">
@@ -219,7 +240,7 @@ function ImpactPage() {
               }}
             >
               <h2 className="fw-bold text-warning">
-                {stats?.jobsCreated?.toLocaleString()}
+                {fmt(stats?.jobsCreated)}
               </h2>
 
               <p className="text-muted mb-0">
@@ -239,7 +260,7 @@ function ImpactPage() {
               }}
             >
               <h2 className="fw-bold text-danger">
-                {stats?.communities}
+                {fmt(stats?.communities)}
               </h2>
 
               <p className="text-muted mb-0">
@@ -280,7 +301,7 @@ function ImpactPage() {
 
               <ChartCard title="Beneficiary Distribution">
 
-                <PieChartComponent />
+                <PieChartComponent data={pieData} />
 
               </ChartCard>
 
@@ -292,7 +313,7 @@ function ImpactPage() {
 
               <ChartCard title="Programs Performance">
 
-                <BarChartComponent />
+                <BarChartComponent data={barData} dataKey="value" xAxisKey="category" />
 
               </ChartCard>
 
@@ -304,7 +325,7 @@ function ImpactPage() {
 
               <ChartCard title="Growth Over Time">
 
-                <AreaChartComponent />
+                <AreaChartComponent data={areaData} dataKey="value" xAxisKey="month" />
 
               </ChartCard>
 

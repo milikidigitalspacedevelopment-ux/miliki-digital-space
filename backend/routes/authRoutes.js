@@ -7,7 +7,9 @@ import {
   refresh,
   logout,
   authorizeGoogle,
+  authorizeZoho,
   handleGoogleCallback,
+  handleZohoCallback,
   forgotPassword,
   resetPassword,
   verifyEmail,
@@ -26,6 +28,8 @@ router.post("/verify-email/:token", verifyEmail);
 router.post("/resend-verification", resendVerificationEmail);
 router.get("/google", authorizeGoogle);
 router.get("/google/callback", handleGoogleCallback);
+router.get("/zoho", authorizeZoho);
+router.get("/zoho/callback", handleZohoCallback);
 router.get("/me", authenticate, getProfile);
 
 export default router;

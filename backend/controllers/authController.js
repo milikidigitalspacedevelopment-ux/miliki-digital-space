@@ -103,6 +103,15 @@ async function authorizeGoogle(req, res, next) {
   }
 }
 
+async function authorizeZoho(req, res, next) {
+  try {
+    const url = authService.getZohoAuthUrl();
+    res.redirect(url);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function handleGoogleCallback(req, res, next) {
   try {
     const code = req.query.code;
@@ -126,6 +135,25 @@ async function handleGoogleCallback(req, res, next) {
   }
 }
 
+async function handleZohoCallback(req, res, next) {
+  try {
+    const code = req.query.code;
+    if (!code) return res.status(400).json({ message: "Zoho callback is missing authorization code." });
+
+    const result = await authService.loginWithZohoCode(code);
+    const { user, accessToken, refreshToken } = result;
+
+    const encodedUser = encodeURIComponent(Buffer.from(JSON.stringify(user)).toString("base64"));
+    const redirectUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/auth/zoho/callback?accessToken=${encodeURIComponent(
+      accessToken
+    )}&token=${encodeURIComponent(accessToken)}&refreshToken=${encodeURIComponent(refreshToken)}&user=${encodedUser}`;
+
+    res.redirect(redirectUrl);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export {
   register,
   login,
@@ -136,5 +164,7 @@ export {
   verifyEmail,
   resendVerificationEmail,
   authorizeGoogle,
+  authorizeZoho,
   handleGoogleCallback,
+  handleZohoCallback,
 };

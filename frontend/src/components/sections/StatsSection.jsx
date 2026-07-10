@@ -1,6 +1,6 @@
 function StatsSection({ stats = [] }) {
   return (
-    <section className="py-4 py-md-5">
+    <section className="py-3 py-md-4">
       <div className="container">
         <div className="d-flex flex-row flex-nowrap justify-content-between align-items-stretch gap-1 gap-sm-2 gap-md-3 overflow-hidden">
           {stats.map((item) => (

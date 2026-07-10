@@ -4,10 +4,10 @@ import authService from "../../services/authService";
 import '../../styles/auth.css';
 
 const countryDialCodes = {
+  KE: "+254",
   US: "+1",
   CA: "+1",
   GB: "+44",
-  KE: "+254",
   UG: "+256",
   TZ: "+255",
   RW: "+250",

@@ -21,7 +21,7 @@ const albums = [
 
 function GallerySection() {
   return (
-    <section className="container py-5">
+    <section className="container py-3">
       <SectionHeader
         title="Gallery"
         subtitle="Albums and highlights from our programs and community work"

@@ -22,7 +22,7 @@ function PartnersSection() {
   };
 
   return (
-    <section className="py-5 bg-light">
+    <section className="py-3 bg-light">
 
       <div className="container">
 

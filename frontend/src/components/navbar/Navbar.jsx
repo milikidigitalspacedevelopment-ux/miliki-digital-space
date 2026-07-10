@@ -55,11 +55,21 @@ function Navbar() {
   };
 
   return (
-    <>
-      <TopBar />
+    <nav
+      className="navbar bg-white shadow-sm"
+      style={{
+        position: "fixed",
+        top: "42px",
+        left: 0,
+        right: 0,
+        paddingTop: "0.25rem",
+        paddingBottom: "0.25rem",
+        zIndex: 1080,
+      }}
+    >
+      <div className="container-fluid px-0 d-flex flex-column flex-lg-row align-items-center">
+        <TopBar />
 
-      <nav className="navbar bg-white shadow-sm fixed-top" style={{ paddingTop: "0.25rem", paddingBottom: "0.25rem", zIndex: 1080 }}>
-        <div className="container-fluid px-0 d-flex flex-column flex-lg-row align-items-center">
 
           {/* Upper Row */}
           <div className="d-flex justify-content-between align-items-center w-100 py-2 px-3 flex-grow-1 bg-white text-dark rounded-0 border-bottom" style={{ minHeight: "48px" }}>
@@ -75,9 +85,12 @@ function Navbar() {
                 <List />
               </button>
 
-              <Link className="navbar-brand fw-bold text-dark mb-0" to="/">
+              <Link className="navbar-brand fw-bold mb-0" to="/">
                 Miliki Digital Space
               </Link>
+              <span to="/">
+                <img src="/nav-logo.png" alt="Miliki Logo" style={{ height: "50px", marginLeft: "8px" }} />
+              </span>
             </div>
 
             {isAuthenticated ? (
@@ -126,8 +139,7 @@ function Navbar() {
           />
 
         </div>
-      </nav>
-    </>
+    </nav>
   );
 }
 

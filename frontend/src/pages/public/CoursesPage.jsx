@@ -126,7 +126,7 @@ function CoursesPage() {
 
   return (
     <>
-      <section className="container py-5">
+      <section className="container course-container py-5">
 
         <div className="mb-4">
           <h2 className="fw-bold">Explore our most popular courses</h2>

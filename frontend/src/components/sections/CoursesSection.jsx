@@ -19,7 +19,7 @@ function CoursesSection() {
   };
 
   return (
-    <section className="py-5 bg-light">
+    <section className="py-3 bg-light">
       <div className="container">
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
           <div>

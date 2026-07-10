@@ -23,7 +23,7 @@ function TestimonialsSection() {
   ];
 
   return (
-    <section className="py-5">
+    <section className="py-3">
 
       <div className="container">
 

@@ -7,14 +7,14 @@ import {
 
 function TopBar() {
   return (
-    <div className="topbar bg-primary text-light small py-2">
+    <div className="topbar bg-primary text-light small py-2 w-100" style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1090 }}>
       <div className="container">
 
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 flex-wrap">
 
           {/* Contact Info */}
           <div className="d-flex flex-column flex-sm-row align-items-center text-center text-sm-start gap-2 flex-wrap">
-            <span>
+            <span className="topbar-phone">
               <FaPhoneAlt className="me-2" />
               +254 790 171131
             </span>

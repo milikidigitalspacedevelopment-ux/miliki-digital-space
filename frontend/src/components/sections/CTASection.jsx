@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function CTASection() {
   return (
-    <section className="bg-primary text-white py-5">
+    <section className="bg-primary text-white py-3">
 
       <div className="container text-center">
 

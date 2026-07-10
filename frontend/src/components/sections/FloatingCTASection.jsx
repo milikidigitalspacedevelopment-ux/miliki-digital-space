@@ -1,6 +1,6 @@
 function FloatingCTASection() {
   return (
-    <section className="py-5">
+    <section className="py-3">
       <div className="container text-center">
         <div className="p-4 shadow-sm bg-white rounded">
           <h3 className="fw-bold mb-2">Get Involved</h3>

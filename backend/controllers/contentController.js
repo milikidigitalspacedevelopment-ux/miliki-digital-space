@@ -1,3 +1,6 @@
+import asyncHandler from "express-async-handler";
+import { pool } from "../config/db.js";
+
 const homeContent = {
   hero: {
     title: "Transforming Lives Through Skills Development",
@@ -69,22 +72,37 @@ const donateContent = {
   ],
 };
 
-const impactContent = {
-  hero: {
-    title: "Creating Opportunities and Changing Lives",
-    subtitle: "Through education, entrepreneurship, digital skills and community empowerment, we continue building sustainable futures for thousands of individuals and families.",
-  },
-  highlights: [
-    { value: "8+", label: "Years of Impact" },
-    { value: "54", label: "Communities Served" },
-    { value: "6,200", label: "Graduates" },
-  ],
+const impactContent = async () => {
+  const [yearsResult, communitiesResult, graduatesResult] = await Promise.all([
+    pool.query("SELECT EXTRACT(YEAR FROM AGE(NOW(), COALESCE(MIN(created_at), NOW())))::int AS years FROM users"),
+    pool.query("SELECT COUNT(DISTINCT NULLIF(location, '')) AS communities FROM events"),
+    pool.query("SELECT COUNT(*) AS graduates FROM certificates"),
+  ]);
+
+  const years = yearsResult.rows[0]?.years || 1;
+  const communities = communitiesResult.rows[0]?.communities || 0;
+  const graduates = graduatesResult.rows[0]?.graduates || 0;
+
+  return {
+    hero: {
+      title: "Creating Opportunities and Changing Lives",
+      subtitle: `Serving ${communities} communities, supporting ${graduates} graduates, and building measurable impact across the region.`,
+    },
+    highlights: [
+      { value: `${years}+`, label: "Years of Impact" },
+      { value: `${communities}`, label: "Communities Served" },
+      { value: `${graduates}`, label: "Graduates" },
+    ],
+  };
 };
 
 export const getHomeContent = (req, res) => res.json(homeContent);
 export const getAboutContent = (req, res) => res.json(aboutContent);
 export const getDonateContent = (req, res) => res.json(donateContent);
-export const getImpactContent = (req, res) => res.json(impactContent);
+export const getImpactContent = asyncHandler(async (req, res) => {
+  const content = await impactContent();
+  res.json(content);
+});
 
 export default {
   getHomeContent,

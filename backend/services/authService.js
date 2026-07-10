@@ -31,6 +31,90 @@ function getGoogleAuthUrl() {
   return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
 }
 
+function getZohoAuthUrl() {
+  const params = new URLSearchParams({
+    client_id: process.env.ZOHO_CLIENT_ID,
+    redirect_uri: process.env.ZOHO_REDIRECT_URI,
+    response_type: "code",
+    scope: "ZohoMail.accounts.READ",
+  });
+
+  // ZOHO_ACCOUNTS_HOST is like https://accounts.zoho.eu
+  return `${process.env.ZOHO_ACCOUNTS_HOST.replace(/\/$/, "")}/oauth/v2/auth?${params.toString()}`;
+}
+
+async function exchangeZohoCode(code) {
+  const tokenUrl = `${process.env.ZOHO_ACCOUNTS_HOST.replace(/\/$/, "")}/oauth/v2/token`;
+
+  const response = await fetch(tokenUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      code,
+      client_id: process.env.ZOHO_CLIENT_ID,
+      client_secret: process.env.ZOHO_CLIENT_SECRET,
+      grant_type: "authorization_code",
+      redirect_uri: process.env.ZOHO_REDIRECT_URI,
+    }),
+  });
+
+  const data = await response.json();
+  if (!response.ok || !data.access_token) {
+    const error = new Error(data.error_description || "Zoho token exchange failed");
+    error.status = 400;
+    throw error;
+  }
+
+  return data;
+}
+
+async function loginWithZohoCode(code) {
+  const tokenData = await exchangeZohoCode(code);
+  const accessToken = tokenData.access_token;
+
+  // Try to get account info (email) from Zoho Mail API
+  const mailHost = process.env.ZOHO_MAIL_HOST || "https://mail.zoho.com";
+  const res = await fetch(`${mailHost.replace(/\/$/, "")}/api/accounts`, {
+    headers: { Authorization: `Zoho-oauthtoken ${accessToken}` },
+  });
+
+  const accountData = await res.json();
+  const account = accountData?.data?.[0] || accountData?.data || {};
+  const email = account?.email || account?.accountName || account?.accountId || null;
+
+  if (!email) {
+    const error = new Error("Zoho account email not available");
+    error.status = 400;
+    throw error;
+  }
+
+  const name = account?.accountName || email.split("@")[0];
+
+  let user = await findUserByEmail(email);
+  if (!user) {
+    const randomPassword = crypto.randomBytes(32).toString("hex");
+    const salt = await bcrypt.genSalt(10);
+    const password = await bcrypt.hash(randomPassword, salt);
+
+    user = await createUser({
+      name,
+      email,
+      password,
+      role: "public",
+      profile: { provider: "zoho" },
+    });
+  }
+
+  const access = generateAccessToken({ userId: user.id, role: user.role });
+  const refreshToken = generateRefreshToken({ userId: user.id, role: user.role });
+
+  const decoded = jwt.decode(refreshToken);
+  const expiresAt = decoded && decoded.exp ? new Date(decoded.exp * 1000) : null;
+  if (expiresAt) await saveRefreshToken(user.id, refreshToken, expiresAt);
+
+  return { user, accessToken: access, refreshToken };
+}
+
 async function exchangeGoogleCode(code) {
   const response = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
@@ -335,6 +419,8 @@ async function logout({ token }) {
 
 export {
   getGoogleAuthUrl,
+  getZohoAuthUrl,
+  loginWithZohoCode,
   loginWithGoogleCode,
   register,
   login,

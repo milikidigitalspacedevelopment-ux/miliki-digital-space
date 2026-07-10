@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/hero.css";
 
@@ -10,6 +11,23 @@ function HeroSection({
   secondaryLink = "/about",
   image,
 }) {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Support both single image and array of images
+  const images = Array.isArray(image) ? image : [image];
+  const displayImage = images[currentImageIndex];
+
+  // Rotate images every 5 seconds
+  useEffect(() => {
+    if (images.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [images.length]);
+
   return (
     <section className="hero-section bg-light overflow-hidden">
       <div className="container">
@@ -78,7 +96,7 @@ function HeroSection({
 
               <div className="hero-image-wrapper">
                 <img
-                  src={image}
+                  src={displayImage}
                   alt={title}
                   className="hero-image"
                 />
@@ -105,7 +123,7 @@ function HeroSection({
 
           <div className="hero-image-wrapper">
             <img
-              src={image}
+              src={displayImage}
               alt={title}
               className="hero-image"
             />
