@@ -106,8 +106,10 @@ async function authorizeGoogle(req, res, next) {
 async function authorizeZoho(req, res, next) {
   try {
     const url = authService.getZohoAuthUrl();
+     console.log("Redirecting to Zoho authorization URL:", url);
     res.redirect(url);
   } catch (err) {
+    console.error("Error in authorizeZoho:", err.message);
     next(err);
   }
 }
@@ -136,6 +138,8 @@ async function handleGoogleCallback(req, res, next) {
 }
 
 async function handleZohoCallback(req, res, next) {
+  console.log("=== Zoho callback reached ===");
+  console.log(req.query);
   try {
     const code = req.query.code;
     if (!code) return res.status(400).json({ message: "Zoho callback is missing authorization code." });

@@ -38,13 +38,16 @@ function getZohoAuthUrl() {
     response_type: "code",
     scope: "ZohoMail.accounts.READ",
   });
-
+  
+  console.log("Generating Zoho authorization URL with params:", params.toString());
   // ZOHO_ACCOUNTS_HOST is like https://accounts.zoho.eu
   return `${process.env.ZOHO_ACCOUNTS_HOST.replace(/\/$/, "")}/oauth/v2/auth?${params.toString()}`;
 }
 
 async function exchangeZohoCode(code) {
   const tokenUrl = `${process.env.ZOHO_ACCOUNTS_HOST.replace(/\/$/, "")}/oauth/v2/token`;
+  console.log("Authorization code:", code);
+  console.log("Token URL:", tokenUrl);
 
   const response = await fetch(tokenUrl, {
     method: "POST",
@@ -59,6 +62,8 @@ async function exchangeZohoCode(code) {
   });
 
   const data = await response.json();
+  console.log("Status:", response.status);
+  console.log("Token response:", data);
   if (!response.ok || !data.access_token) {
     const error = new Error(data.error_description || "Zoho token exchange failed");
     error.status = 400;
@@ -77,8 +82,12 @@ async function loginWithZohoCode(code) {
   const res = await fetch(`${mailHost.replace(/\/$/, "")}/api/accounts`, {
     headers: { Authorization: `Zoho-oauthtoken ${accessToken}` },
   });
+  
+  console.log("Mail status:", res.status);
 
+  
   const accountData = await res.json();
+  console.log(accountData);
   const account = accountData?.data?.[0] || accountData?.data || {};
   const email = account?.email || account?.accountName || account?.accountId || null;
 
