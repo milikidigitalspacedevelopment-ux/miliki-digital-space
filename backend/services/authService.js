@@ -36,7 +36,11 @@ function getZohoAuthUrl() {
     client_id: process.env.ZOHO_CLIENT_ID,
     redirect_uri: process.env.ZOHO_REDIRECT_URI,
     response_type: "code",
-    scope: "ZohoMail.accounts.READ",
+    // `offline_access` is required for Zoho to include a refresh token in the
+    // authorization-code exchange.
+    scope: "ZohoMail.accounts.READ,offline_access",
+    access_type: "offline",
+    prompt: "consent",
   });
   
   console.log("Generating Zoho authorization URL with params:", params.toString());
@@ -44,9 +48,24 @@ function getZohoAuthUrl() {
   return `${process.env.ZOHO_ACCOUNTS_HOST.replace(/\/$/, "")}/oauth/v2/auth?${params.toString()}`;
 }
 
+async function readZohoResponse(response) {
+  const body = await response.text();
+
+  try {
+    return JSON.parse(body);
+  } catch {
+    const contentType = response.headers.get("content-type") || "unknown";
+    const error = new Error(
+      `Zoho returned a non-JSON response (HTTP ${response.status}, content type: ${contentType}). ` +
+        "Check that ZOHO_ACCOUNTS_HOST uses your Zoho data-center domain."
+    );
+    error.status = 502;
+    throw error;
+  }
+}
+
 async function exchangeZohoCode(code) {
   const tokenUrl = `${process.env.ZOHO_ACCOUNTS_HOST.replace(/\/$/, "")}/oauth/v2/token`;
-  console.log("Authorization code:", code);
   console.log("Token URL:", tokenUrl);
 
   const response = await fetch(tokenUrl, {
@@ -61,7 +80,7 @@ async function exchangeZohoCode(code) {
     }),
   });
 
-  const data = await response.json();
+  const data = await readZohoResponse(response);
   console.log("Status:", response.status);
   console.log("Token response:", data);
   if (!response.ok || !data.access_token) {
@@ -86,7 +105,7 @@ async function loginWithZohoCode(code) {
   console.log("Mail status:", res.status);
 
   
-  const accountData = await res.json();
+  const accountData = await readZohoResponse(res);
   console.log(accountData);
   const account = accountData?.data?.[0] || accountData?.data || {};
   const email = account?.email || account?.accountName || account?.accountId || null;
