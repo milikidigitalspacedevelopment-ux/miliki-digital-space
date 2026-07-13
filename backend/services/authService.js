@@ -48,7 +48,7 @@ function getZohoAuthUrl() {
   return `${process.env.ZOHO_ACCOUNTS_HOST.replace(/\/$/, "")}/oauth/v2/auth?${params.toString()}`;
 }
 
-async function readZohoResponse(response) {
+async function readZohoResponse(response, requestUrl) {
   const body = await response.text();
 
   try {
@@ -57,7 +57,7 @@ async function readZohoResponse(response) {
     const contentType = response.headers.get("content-type") || "unknown";
     const error = new Error(
       `Zoho returned a non-JSON response (HTTP ${response.status}, content type: ${contentType}). ` +
-        "Check that ZOHO_ACCOUNTS_HOST uses your Zoho data-center domain."
+        `Request URL: ${requestUrl}`
     );
     error.status = 502;
     throw error;
@@ -80,7 +80,7 @@ async function exchangeZohoCode(code) {
     }),
   });
 
-  const data = await readZohoResponse(response);
+  const data = await readZohoResponse(response, tokenUrl);
   console.log("Status:", response.status);
   console.log("Token response:", data);
   if (!response.ok || !data.access_token) {
@@ -97,15 +97,18 @@ async function loginWithZohoCode(code) {
   const accessToken = tokenData.access_token;
 
   // Try to get account info (email) from Zoho Mail API
-  const mailHost = process.env.ZOHO_MAIL_HOST || "https://mail.zoho.com";
-  const res = await fetch(`${mailHost.replace(/\/$/, "")}/api/accounts`, {
+  const mailHost = (process.env.ZOHO_MAIL_HOST || "https://mail.zoho.com")
+    .replace(/\/api\/?$/, "")
+    .replace(/\/$/, "");
+  const accountsUrl = `${mailHost}/api/accounts`;
+  const res = await fetch(accountsUrl, {
     headers: { Authorization: `Zoho-oauthtoken ${accessToken}` },
   });
   
   console.log("Mail status:", res.status);
 
   
-  const accountData = await readZohoResponse(res);
+  const accountData = await readZohoResponse(res, accountsUrl);
   console.log(accountData);
   const account = accountData?.data?.[0] || accountData?.data || {};
   const email = account?.email || account?.accountName || account?.accountId || null;

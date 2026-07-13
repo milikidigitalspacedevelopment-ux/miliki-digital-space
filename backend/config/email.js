@@ -8,9 +8,10 @@ const ZOHO_AUTH_URL =
   process.env.ZOHO_ACCOUNTS_HOST +
   "/oauth/v2/token";
 
-const ZOHO_MAIL_HOST =
+const ZOHO_MAIL_HOST = (
   process.env.ZOHO_MAIL_HOST ||
-  "https://mail.zoho.com";
+  "https://mail.zoho.com"
+).replace(/\/api\/?$/, "").replace(/\/$/, "");
 
 let cachedAccountId = null;
 let cachedToken = null;
