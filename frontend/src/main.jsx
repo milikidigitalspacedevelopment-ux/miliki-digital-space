@@ -11,7 +11,7 @@ import "./styles/variables.css";
 import "./styles/global.css";
 import "./styles/dashboard.css";
 
-console.log("[dev] src/main.jsx executed");
+//console.log("[dev] src/main.jsx executed");
 
 const rootElement = document.getElementById("root");
 

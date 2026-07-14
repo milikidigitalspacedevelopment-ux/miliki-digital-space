@@ -28,7 +28,7 @@ function MobileMenu({
   handleLogout,
 }) {
   useEffect(() => {
-    console.log("[dev] MobileMenu open ->", open);
+    //console.log("[dev] MobileMenu open ->", open);
   }, [open]);
   const sidebarRef = useRef(null);
   const bottomRef = useRef(null);

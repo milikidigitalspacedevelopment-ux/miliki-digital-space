@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import Breadcrumbs from "../../components/breadcrumbs/Breadcrumbs";
-import CourseSidebarCard from "../../components/sidebars/CourseSidebarCard";
 import CourseCard from "../../components/cards/CourseCard";
 import CTASection from "../../components/sections/CTASection";
 
 import courseService from "../../services/courseService";
+import publicCourseService from "../../services/publicCourseService";
 import useAuth from "../../hooks/useAuth";
 
 const getSummaryText = (value, maxLength = 160) => {
@@ -42,25 +42,18 @@ const getDurationText = (course) => {
   return "Flexible";
 };
 
+const splitIntoPoints = (value) =>
+  String(value || "")
+    .split(/\r?\n|;|(?<=[.!?])\s+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
 const normalizeList = (value) => {
-  if (Array.isArray(value)) {
-    return value
-      .map((item) => {
-        if (typeof item === "string") return item;
-        return item?.content || item?.title || "";
-      })
-      .map((item) => String(item).trim())
-      .filter(Boolean);
-  }
+  const entries = Array.isArray(value)
+    ? value.map((item) => (typeof item === "string" ? item : item?.content || item?.title || ""))
+    : [value];
 
-  if (typeof value === "string") {
-    return value
-      .split(/\n|;/)
-      .map((item) => item.trim())
-      .filter(Boolean);
-  }
-
-  return [];
+  return entries.flatMap(splitIntoPoints);
 };
 
 function CourseDetailsPage() {
@@ -96,7 +89,7 @@ function CourseDetailsPage() {
     setError(null);
 
     try {
-      const response = await courseService.getCourseById(id);
+      const response = await publicCourseService.getPublicCourseById(id);
       const courseData = response?.data || response;
 
       const normalizedCourse = {
@@ -134,7 +127,7 @@ function CourseDetailsPage() {
       // Track popularity (fire-and-forget)
       courseService.trackPopularity(id).catch(() => null);
 
-      const coursesResponse = await courseService.getCourses({ status: "published" });
+      const coursesResponse = await publicCourseService.getPublicCourses();
       const publishedCourses = Array.isArray(coursesResponse)
         ? coursesResponse
         : coursesResponse?.data || [];
@@ -214,6 +207,24 @@ function CourseDetailsPage() {
     );
   }
 
+  const enrollButtonText = isEnrolled
+    ? "Enrolled"
+    : enrolling
+    ? "Enrolling..."
+    : "Enroll now";
+
+  const courseInfo = [
+    ["Program", course.program_name],
+    ["Instructor", course.instructor_name],
+    ["Duration", course.duration],
+    ["Level", course.level],
+    ["Delivery", course.delivery_mode],
+    ["Schedule", course.class_schedule],
+    ["Next intake", course.next_intake],
+    ["Certificate", course.certificate],
+    ["Language", course.language],
+  ];
+
   return (
     <>
       <section className="container py-5">
@@ -225,45 +236,69 @@ function CourseDetailsPage() {
           ]}
         />
 
-        <div className="row gx-4 gy-5">
-          <div className="col-12 col-xl-8">
-            <div className="mb-4 rounded-5 overflow-hidden shadow-sm">
+        <div className="course-details-layout">
+          <div className="course-detail-hero mb-4">
+            <div className="course-detail-image rounded-5 overflow-hidden shadow-sm">
               <img
                 src={course.image}
                 alt={course.title}
-                className="img-fluid w-100"
               />
             </div>
 
-            <div className="mb-5">
-              <div className="d-flex flex-column flex-sm-row justify-content-between gap-3 align-items-start">
-                <div>
+            <header className="course-detail-header">
+              <div className="d-flex flex-column flex-xl-row justify-content-between gap-3 align-items-xl-start">
+                <div className="course-detail-title">
                   <span className="text-uppercase text-muted small">{course.category_name}</span>
                   <h1 className="fw-bold mt-2 mb-3">{course.title}</h1>
-                  <div className="text-secondary mb-3">{course.overview}</div>
+                  <p className="text-secondary mb-0">{course.overview}</p>
                 </div>
-              </div>
 
-              <div className="d-flex flex-column flex-sm-row flex-wrap gap-3">
-                <div className="badge bg-primary bg-opacity-15 text-primary rounded-pill py-2 px-3">
-                  {course.program_name}
-                </div>
-                <div className="badge bg-secondary bg-opacity-15 text-secondary rounded-pill py-2 px-3">
-                  {course.instructor_name}
-                </div>
+                <button
+                  className="btn btn-primary rounded-pill px-4 py-2 d-none d-xl-inline-block"
+                  onClick={handleEnroll}
+                  disabled={isEnrolled || enrolling}
+                >
+                  {enrollButtonText}
+                </button>
               </div>
-            </div>
+            </header>
+          </div>
 
+          <div className="course-mobile-enroll d-xl-none">
+            <button
+              className="btn btn-primary w-100 rounded-pill py-3"
+              onClick={handleEnroll}
+              disabled={isEnrolled || enrolling}
+            >
+              {enrollButtonText}
+            </button>
+
+            {enrollError ? <div className="mt-2 text-danger small">{enrollError}</div> : null}
+            {enrollSuccess ? <div className="mt-2 text-success small">{enrollSuccess}</div> : null}
+          </div>
+
+          <div className="course-detail-info-row mb-5">
+            {courseInfo.map(([label, value]) => (
+              <div className="course-detail-info-item" key={label}>
+                <span>{label}</span>
+                <strong>{value}</strong>
+              </div>
+            ))}
+          </div>
+
+          <div className="course-detail-content-columns mb-5">
             <div className="mb-5">
               <h3 className="fw-bold mb-4">What You&rsquo;ll Learn</h3>
               <div className="row g-3">
                 {course.learn.length > 0 ? (
                   course.learn.map((item) => (
                     <div className="col-12 col-sm-6" key={item}>
-                      <div className="p-3 rounded-4 bg-light border border-1 border-white shadow-sm small text-secondary">
-                        <strong className="me-2 text-success">✓</strong>
-                        {item}
-                      </div>
+                      <ul className="course-points list-unstyled m-0">
+                        <li className="course-point d-flex align-items-start p-2 rounded-4 bg-light border shadow-sm small text-secondary">
+                          <strong className="me-2 text-success">✓</strong>
+                          <span className="flex-grow-1">{item}</span>
+                        </li>
+                      </ul>
                     </div>
                   ))
                 ) : (
@@ -278,10 +313,12 @@ function CourseDetailsPage() {
                 {course.requirements.length > 0 ? (
                   course.requirements.map((item) => (
                     <div className="col-12 col-sm-6" key={item}>
-                      <div className="p-3 rounded-4 border border-light shadow-sm small text-secondary">
-                        <span className="me-2">•</span>
-                        {item}
-                      </div>
+                      <ul className="course-points list-unstyled m-0">
+                        <li className="course-point d-flex align-items-start p-2 rounded-4 border shadow-sm small text-secondary">
+                          <span className="me-2">•</span>
+                          <span className="flex-grow-1">{item}</span>
+                        </li>
+                      </ul>
                     </div>
                   ))
                 ) : (
@@ -296,10 +333,12 @@ function CourseDetailsPage() {
                 {course.opportunities.length > 0 ? (
                   course.opportunities.map((item) => (
                     <div className="col-12 col-sm-6" key={item}>
-                      <div className="p-3 rounded-4 bg-white border border-1 border-light shadow-sm small text-secondary">
-                        <span className="me-2">→</span>
-                        {item}
-                      </div>
+                      <ul className="course-points list-unstyled m-0">
+                        <li className="course-point d-flex align-items-start p-2 rounded-4 bg-white border shadow-sm small text-secondary">
+                          <span className="me-2">→</span>
+                          <span className="flex-grow-1">{item}</span>
+                        </li>
+                      </ul>
                     </div>
                   ))
                 ) : (
@@ -307,6 +346,8 @@ function CourseDetailsPage() {
                 )}
               </div>
             </div>
+
+          </div>
 
             <div className="mb-5">
               <h3 className="fw-bold mb-4">Related Courses</h3>
@@ -322,24 +363,6 @@ function CourseDetailsPage() {
                 <div className="text-muted">No related courses found in this category.</div>
               )}
             </div>
-          </div>
-
-          <div className="col-12 col-xl-4">
-            <CourseSidebarCard
-              duration={course.duration}
-              level={course.level}
-              certificate={course.certificate}
-              language={course.language}
-              deliveryMode={course.delivery_mode}
-              schedule={course.class_schedule}
-              nextIntake={course.next_intake}
-              isEnrolled={isEnrolled}
-              enrolling={enrolling}
-              onEnroll={handleEnroll}
-              enrollError={enrollError}
-              enrollSuccess={enrollSuccess}
-            />
-          </div>
         </div>
       </section>
 

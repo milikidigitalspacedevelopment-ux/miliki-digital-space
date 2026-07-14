@@ -9,7 +9,7 @@ import CTASection from "../../components/sections/CTASection";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import EmptyState from "../../components/common/EmptyState";
 
-import programService from "../../services/programService";
+import publicProgramService from "../../services/publicProgramService";
 
 function ProgramsPage() {
   const [programs, setPrograms] = useState([]);
@@ -26,10 +26,22 @@ function ProgramsPage() {
     try {
       setLoading(true);
 
-      const response = await programService.getPrograms();
+      console.debug("[ProgramsPage] requesting programs list");
+      const response = await publicProgramService.getPublicPrograms();
       const payload = Array.isArray(response) ? response : response?.data || response?.programs || [];
+      console.debug("[ProgramsPage] received programs payload", { count: payload.length });
 
-      setPrograms(payload);
+      const normalized = payload.map((p) => ({
+        ...p,
+        title: p.title || p.name || "Untitled program",
+        image: p.image || p.thumbnail || "/images/program.jpg",
+        description:
+          p.description || p.overview || p.summary || p.short_description || "",
+        category: p.category || p.category_name || "",
+        slug: p.slug || p.id,
+      }));
+
+      setPrograms(normalized);
     } catch (error) {
       console.error(error);
       setPrograms([]);
@@ -70,7 +82,7 @@ function ProgramsPage() {
         subtitle="Empowering communities through skills and innovation."
       />
 
-      <section className="container py-5">
+      <section className="container-fluid programs-page-shell py-5">
 
         <div className="row g-4 align-items-center mb-5">
 
@@ -104,15 +116,6 @@ function ProgramsPage() {
             {filteredPrograms.map((program) => (
               <div className="program-card-wrapper" key={program.id}>
                 <ProgramCard program={program} />
-
-                <div className="mt-3">
-                  <Link
-                    to={`/programs/${program.id}`}
-                    className="btn btn-success rounded-pill px-4"
-                  >
-                    Learn More
-                  </Link>
-                </div>
               </div>
             ))}
           </div>

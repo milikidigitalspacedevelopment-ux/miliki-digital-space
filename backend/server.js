@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import app from "./app.js";
 import { testConnection as testPg } from "./config/db.js";
 import { initializeDatabase } from "./database/initialize.js";
+import { runMigrations } from "./database/migrate.js";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ async function startServer() {
     // Initialize database schema
     console.log("📦 Initializing database schema...");
     await initializeDatabase();
+    await runMigrations();
     console.log("✅ Database schema ready!\n");
 
     // Start server

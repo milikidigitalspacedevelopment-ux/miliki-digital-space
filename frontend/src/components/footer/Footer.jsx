@@ -3,7 +3,7 @@ import NewsletterForm from "./NewsletterForm";
 import SocialLinks from "./SocialLinks";
 
 function Footer() {
-  console.log("[dev] Footer render");
+  //console.log("[dev] Footer render");
   return (
     <footer className="bg-success text-light pt-5">
 

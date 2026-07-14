@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import CourseCard from "../cards/CourseCard";
-import courseService from "../../services/courseService";
+import publicCourseService from "../../services/publicCourseService";
 
 function CoursesSection() {
   const [courses, setCourses] = useState([]);
@@ -9,14 +9,14 @@ function CoursesSection() {
     fetchCourses();
   }, []);
 
-  const fetchCourses = async () => {
+  async function fetchCourses() {
     try {
-      const response = await courseService.getAllCourses();
+      const response = await publicCourseService.getPublicCourses();
       setCourses(response);
     } catch (error) {
       console.error(error);
     }
-  };
+  }
 
   return (
     <section className="py-3 bg-light">

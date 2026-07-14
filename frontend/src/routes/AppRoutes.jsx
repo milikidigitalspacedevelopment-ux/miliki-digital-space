@@ -11,7 +11,7 @@ import PartnerRoutes from "./PartnerRoutes";
 import SuperAdminRoutes from "./SuperAdminRoutes";
 
 function AppRoutes() {
-  console.log("[dev] AppRoutes render");
+ // console.log("[dev] AppRoutes render");
 
   return (
     <Routes>

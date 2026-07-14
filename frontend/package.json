@@ -5,12 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "check-supabase": "node ../scripts/check-supabase.mjs",
+    "wire-supabase": "node ../scripts/wire-supabase-to-frontend.mjs",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
+    "@supabase/supabase-js": "^2.110.2",
     "axios": "^1.18.0",
     "bootstrap": "^5.3.8",
     "framer-motion": "^12.40.0",

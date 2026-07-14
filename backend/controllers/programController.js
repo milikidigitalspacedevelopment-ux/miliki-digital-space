@@ -35,6 +35,7 @@ const resolveCategoryId = async (value) => {
 export const getPrograms = asyncHandler(async (req, res) => {
   const { q, status, category, page = 1, perPage = 20 } = req.query;
   const offset = (Number(page) - 1) * Number(perPage);
+  console.log("[programController] getPrograms request", { q, status, category, page, perPage });
 
   const conditions = [];
   const values = [];
@@ -70,11 +71,13 @@ export const getPrograms = asyncHandler(async (req, res) => {
   values.push(Number(perPage), offset);
 
   const result = await pool.query(query, values);
+  console.log("[programController] getPrograms response", { count: result.rows.length });
   res.json(result.rows);
 });
 
 export const getProgram = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  console.log("[programController] getProgram request", { id });
 
   const result = await pool.query(
     `SELECT p.id, p.title, p.description, p.status, p.start_date, p.end_date,
@@ -82,15 +85,65 @@ export const getProgram = asyncHandler(async (req, res) => {
             c.name AS category_name, c.slug AS category_slug
      FROM programs p
      LEFT JOIN categories c ON c.id = p.category_id
-     WHERE p.id = $1 OR p.slug = $1`,
-    [id]
+     ORDER BY p.created_at DESC`
   );
 
-  if (!result.rows[0]) {
+  const match = result.rows.find((row) => {
+    const rowId = String(row.id || "");
+    const requestedId = String(id || "").trim();
+    return rowId === requestedId || slugify(row.title) === slugify(requestedId);
+  });
+
+  if (!match) {
+    console.log("[programController] getProgram not found", { id });
     return res.status(404).json({ message: "Program not found" });
   }
 
-  res.json(result.rows[0]);
+  console.log("[programController] getProgram response", { id, found: true });
+  res.json(match);
+});
+
+export const recordProgramView = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS analytics_events (
+      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+      entity_type TEXT NOT NULL,
+      entity_id TEXT NOT NULL,
+      event_type TEXT NOT NULL DEFAULT 'view',
+      metadata JSONB DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ DEFAULT now()
+    )
+  `);
+
+  await pool.query(
+    `INSERT INTO analytics_events (entity_type, entity_id, event_type, metadata)
+     VALUES ($1, $2, $3, $4)`,
+    ["program", id, "view", { source: "program-details-page" }]
+  );
+
+  const countResult = await pool.query(
+    `SELECT COUNT(*)::int AS views
+     FROM analytics_events
+     WHERE entity_type = $1 AND entity_id = $2 AND event_type = $3`,
+    ["program", id, "view"]
+  );
+
+  res.json({ id, views: countResult.rows[0].views });
+});
+
+export const getProgramViews = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const countResult = await pool.query(
+    `SELECT COUNT(*)::int AS views
+     FROM analytics_events
+     WHERE entity_type = $1 AND entity_id = $2 AND event_type = $3`,
+    ["program", id, "view"]
+  );
+
+  res.json({ id, views: countResult.rows[0].views });
 });
 
 export const createProgram = asyncHandler(async (req, res) => {

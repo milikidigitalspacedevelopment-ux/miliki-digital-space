@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import {
   FaPhoneAlt,
   FaEnvelope,
@@ -5,9 +6,9 @@ import {
   FaInstagram,
 } from "react-icons/fa";
 
-function TopBar() {
+const TopBar = forwardRef(function TopBar(_, ref) {
   return (
-    <div className="topbar bg-primary text-light small py-2 w-100" style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1090 }}>
+    <div ref={ref} className="topbar bg-primary text-light small py-2 w-100">
       <div className="container">
 
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 flex-wrap">
@@ -51,6 +52,6 @@ function TopBar() {
       </div>
     </div>
   );
-}
+});
 
 export default TopBar;

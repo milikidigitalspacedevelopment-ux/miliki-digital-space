@@ -19,6 +19,11 @@ export const getProgram = async (id) => {
   return normalizeItem(response.data ?? response);
 };
 
+export const getProgramViewCount = async (id) => {
+  const response = await api.get(`/programs/${id}/views`);
+  return normalizeItem(response.data ?? response);
+};
+
 export const getProgramById = async (id) => getProgram(id);
 
 export const createProgram = async (payload) => {
@@ -50,6 +55,7 @@ export const uploadProgramImage = async (file) => {
 const programService = {
   getPrograms,
   getProgram,
+  getProgramViewCount,
   getProgramById,
   createProgram,
   updateProgram,

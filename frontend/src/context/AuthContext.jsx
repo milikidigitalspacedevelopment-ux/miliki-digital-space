@@ -31,7 +31,7 @@ function AuthProvider({ children }) {
     initializeAuth();
   }, []);
 
-  console.log("[dev] AuthProvider render", { user, token, loading });
+  //console.log("[dev] AuthProvider render", { user, token, loading });
 
   const initializeAuth = async () => {
     try {

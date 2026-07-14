@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import ProgramCard from "../cards/ProgramCard";
-import programService from "../../services/programService";
+import publicProgramService from "../../services/publicProgramService";
 
 function ProgramsSection() {
   const [programs, setPrograms] =
@@ -12,8 +12,11 @@ function ProgramsSection() {
 
   const fetchPrograms = async () => {
     try {
-      const data = await programService.getPrograms();
-      setPrograms(Array.isArray(data) ? data : data?.data || data?.programs || []);
+      console.debug("[ProgramsSection] requesting featured programs");
+      const data = await publicProgramService.getPublicPrograms();
+      const nextPrograms = Array.isArray(data) ? data : data?.data || data?.programs || [];
+      console.debug("[ProgramsSection] received featured programs", { count: nextPrograms.length });
+      setPrograms(nextPrograms);
     } catch (error) {
       console.error(error);
     }

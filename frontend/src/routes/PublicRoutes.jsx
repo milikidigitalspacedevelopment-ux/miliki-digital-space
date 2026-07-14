@@ -24,7 +24,7 @@ import ContactPage from "../pages/public/ContactPage";
 import NotFoundPage from "../pages/public/NotFoundPage";
 
 function PublicRoutes() {
-  console.log('[dev] PublicRoutes invoked');
+  //console.log('[dev] PublicRoutes invoked');
   return (
     <>
       <Route element={<PublicLayout />}>
@@ -43,7 +43,7 @@ function PublicRoutes() {
         <Route path="/courses/:id" element={<CourseDetailsPage />} />
 
         <Route path="/programs" element={<ProgramsPage />} />
-        <Route path="/programs/:id" element={<ProgramDetailsPage />} />
+        <Route path="/programs/:slug" element={<ProgramDetailsPage />} />
 
         <Route path="/events" element={<EventsPage />} />
         <Route path="/events/:id" element={<EventDetailsPage />} />

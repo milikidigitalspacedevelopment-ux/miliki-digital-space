@@ -1,20 +1,47 @@
 import { Link, useNavigate } from "react-router-dom";
 import TopBar from "./TopBar";
 import MobileMenu from "./MobileMenu";
-import { useState } from "react";
+import { useState, useRef, useLayoutEffect } from "react";
 import { List } from "react-bootstrap-icons";
 import useAuth from "../../hooks/useAuth";
 import { getDashboardPathByRole } from "../../utils/redirectByRole";
 
 function Navbar() {
-  console.log("[dev] Navbar render");
+  //console.log("[dev] Navbar render");
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const topbarRef = useRef(null);
+  const [navbarTop, setNavbarTop] = useState(0);
+
+  useLayoutEffect(() => {
+    const updateNavbarTop = () => {
+      const topbar = topbarRef.current;
+      if (!topbar) {
+        setNavbarTop(0);
+        return;
+      }
+
+      const rect = topbar.getBoundingClientRect();
+      const height = rect.height || 0;
+      const nextTop = Math.max(0, height + rect.top);
+      setNavbarTop(nextTop);
+    };
+
+    updateNavbarTop();
+    window.addEventListener("scroll", updateNavbarTop, { passive: true });
+    window.addEventListener("resize", updateNavbarTop);
+
+    return () => {
+      window.removeEventListener("scroll", updateNavbarTop);
+      window.removeEventListener("resize", updateNavbarTop);
+    };
+  }, []);
+
   const toggleMenu = () =>
     setMenuOpen((s) => {
       const next = !s;
-      console.log("[dev] Navbar toggle ->", next);
+     // console.log("[dev] Navbar toggle ->", next);
       return next;
     });
 
@@ -55,20 +82,21 @@ function Navbar() {
   };
 
   return (
-    <nav
-      className="navbar bg-white shadow-sm"
-      style={{
-        position: "fixed",
-        top: "42px",
-        left: 0,
-        right: 0,
-        paddingTop: "0.25rem",
-        paddingBottom: "0.25rem",
-        zIndex: 1080,
-      }}
-    >
-      <div className="container-fluid px-0 d-flex flex-column flex-lg-row align-items-center">
-        <TopBar />
+    <>
+      <TopBar ref={topbarRef} />
+      <nav
+        className="navbar bg-white shadow-sm"
+        style={{
+          position: "fixed",
+          top: navbarTop,
+          left: 0,
+          right: 0,
+          paddingTop: "0.25rem",
+          paddingBottom: "0.25rem",
+          zIndex: 1080,
+        }}
+      >
+        <div className="container-fluid px-0 d-flex flex-column flex-lg-row align-items-center">
 
 
           {/* Upper Row */}
@@ -139,7 +167,8 @@ function Navbar() {
           />
 
         </div>
-    </nav>
+      </nav>
+    </>
   );
 }
 

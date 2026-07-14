@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import PageBanner from "../../components/common/PageBanner";
 import CTASection from "../../components/sections/CTASection";
 import blogService from "../../services/blogService";
-import courseService from "../../services/courseService";
-import programService from "../../services/programService";
+import publicCourseService from "../../services/publicCourseService";
+import publicProgramService from "../../services/publicProgramService";
 
 function ResourcesPage() {
   const [resources, setResources] = useState([]);
@@ -15,8 +15,8 @@ function ResourcesPage() {
     const loadResources = async () => {
       try {
         const [programsResponse, coursesResponse, blogsResponse] = await Promise.all([
-          programService.getPrograms().catch(() => []),
-          courseService.getCourses().catch(() => []),
+          publicProgramService.getPublicPrograms().catch(() => []),
+          publicCourseService.getPublicCourses().catch(() => []),
           blogService.getBlogs().catch(() => []),
         ]);
 

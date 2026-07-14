@@ -70,6 +70,8 @@ function ProgramsPage() {
   const getProgramParticipants = (program) =>
     program.participants || program.enrollments || 0;
 
+  const getProgramViews = (program) => Number(program.views || program.view_count || 0);
+
   const categories = useMemo(() => {
     const set = new Set(programs.map((p) => getProgramCategory(p)).filter(Boolean));
     return ["", ...Array.from(set)];
@@ -404,6 +406,7 @@ function ProgramsPage() {
                 <th>Program</th>
                 <th>Category</th>
                 <th>Participants</th>
+                <th>Views</th>
                 <th>Duration</th>
                 <th>Status</th>
                 <th width="180">Actions</th>
@@ -424,6 +427,7 @@ function ProgramsPage() {
                   <td className="fw-semibold">{program.title}</td>
                   <td>{getProgramCategory(program)}</td>
                   <td>{getProgramParticipants(program).toLocaleString()}</td>
+                  <td>{getProgramViews(program).toLocaleString()}</td>
                   <td>{getProgramDuration(program)}</td>
                   <td>
                     <span
@@ -544,6 +548,10 @@ function ProgramsPage() {
                     <div className="col-12">
                       <h6 className="fw-bold">Status</h6>
                       <p>{getProgramStatus(selectedProgram)}</p>
+                    </div>
+                    <div className="col-12">
+                      <h6 className="fw-bold">Views</h6>
+                      <p>{getProgramViews(selectedProgram).toLocaleString()}</p>
                     </div>
                   </div>
                 </div>

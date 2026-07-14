@@ -8,7 +8,7 @@ import CourseCard from "../../components/cards/CourseCard";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import EmptyState from "../../components/common/EmptyState";
 import CTASection from "../../components/sections/CTASection";
-import courseService from "../../services/courseService";
+import publicCourseService from "../../services/publicCourseService";
 
 function CoursesPage() {
   const [courses, setCourses] = useState([]);
@@ -56,7 +56,7 @@ function CoursesPage() {
     try {
       setLoading(true);
 
-      const response = await courseService.getCourses();
+      const response = await publicCourseService.getPublicCourses();
       const payload = Array.isArray(response) ? response : response?.data || [];
       const publicCourses = (Array.isArray(payload) ? payload : []).filter((course) => {
         const status = (course?.status || "").toLowerCase();
