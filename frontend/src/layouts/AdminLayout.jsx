@@ -10,7 +10,10 @@ import {
   FaDonate,
   FaBullhorn,
   FaChartLine,
-  FaCog
+  FaCog,
+  FaImages,
+  FaEnvelope,
+  FaCommentDots
 } from "react-icons/fa";
 
 import DashboardLayoutShell from "./DashboardLayoutShell";
@@ -66,6 +69,21 @@ function AdminLayout() {
       label: "Campaigns",
       path: "/admin/campaigns",
       icon: <FaBullhorn />
+    },
+    {
+      label: "Gallery",
+      path: "/admin/gallery",
+      icon: <FaImages />
+    },
+    {
+      label: "Communications",
+      path: "/admin/communications",
+      icon: <FaEnvelope />
+    },
+    {
+      label: "Testimonials",
+      path: "/admin/testimonials",
+      icon: <FaCommentDots />
     },
     {
       label: "Reports",

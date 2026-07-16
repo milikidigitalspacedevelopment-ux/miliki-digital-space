@@ -70,15 +70,6 @@ function EventsPage() {
               >
                 <EventCard event={event} />
 
-                <div className="mt-3">
-                  <Link
-                    className="btn btn-success rounded-pill"
-                    to={`/events/${event.id}`}
-                  >
-                    View Details
-                  </Link>
-                </div>
-
               </div>
             ))}
 

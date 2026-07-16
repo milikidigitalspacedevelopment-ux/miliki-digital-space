@@ -13,6 +13,7 @@ import CategoryPills from "../../components/filters/CategoryPills";
 import TestimonialsSection from "../../components/sections/TestimonialsSection";
 import GallerySection from "../../components/sections/GallerySection";
 import CTASection from "../../components/sections/CTASection";
+import TestimonialForm from "../../components/forms/TestimonialForm";
 
 import analyticsService from "../../services/analyticsService";
 
@@ -103,7 +104,7 @@ function SuccessStoriesPage() {
           style={{
             borderRadius: "90px 30px 90px 30px",
             background:
-              "linear-gradient(135deg,#198754,#0d6efd)"
+              "linear-gradient(135deg,#198754 0%,#2e8b57 55%,#22c55e 100%)"
           }}
         >
 
@@ -176,7 +177,7 @@ function SuccessStoriesPage() {
             <div className="col-lg-5">
 
               <img
-                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
+                src="/impact.png"
                 alt="Stories"
                 className="w-100"
                 style={{
@@ -262,7 +263,7 @@ function SuccessStoriesPage() {
                 <img
                   src={
                     filteredStories[0]?.image ||
-                    "https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
+                    "/impact.png"
                   }
                   alt="Featured story"
                   className="w-100"
@@ -392,7 +393,7 @@ function SuccessStoriesPage() {
                   <div className="col-6">
 
                     <img
-                      src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7"
+                      src="/impact.png"
                       alt="Before"
                       className="w-100 h-100"
                       style={{
@@ -440,7 +441,7 @@ function SuccessStoriesPage() {
                   <div className="col-6">
 
                     <img
-                      src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
+                      src="/impact.png"
                       alt="After"
                       className="w-100 h-100"
                       style={{
@@ -504,7 +505,7 @@ function SuccessStoriesPage() {
             >
 
               <img
-                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
+                src="/impact.png"
                 className="w-100"
                 style={{
                   height: 250,
@@ -540,7 +541,7 @@ function SuccessStoriesPage() {
             >
 
               <img
-                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330"
+                src="/impact.png"
                 className="w-100"
                 style={{
                   height: 250,
@@ -575,7 +576,7 @@ function SuccessStoriesPage() {
             >
 
               <img
-                src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df"
+                src="/impact.png"
                 className="w-100"
                 style={{
                   height: 250,
@@ -717,6 +718,9 @@ function SuccessStoriesPage() {
 
       <TestimonialsSection />
 
+      <section className="container py-5">
+        <TestimonialForm />
+      </section>
 
       {/* GALLERY */}
 
@@ -729,7 +733,7 @@ function SuccessStoriesPage() {
         className="py-5"
         style={{
           background:
-            "linear-gradient(135deg,#198754,#0d6efd)"
+            "linear-gradient(135deg,#1f7a3f 0%,#2e8b57 45%,#198754 100%)"
         }}
       >
         <div className="container">
@@ -745,7 +749,7 @@ function SuccessStoriesPage() {
             }}
           >
 
-            <span className="badge bg-light text-success px-3 py-2 mb-4">
+            <span className="badge bg-white text-success px-3 py-2 mb-4" style={{ border: "1px solid rgba(25,135,84,0.2)" }}>
 
               JOIN THE MOVEMENT
 
@@ -774,7 +778,7 @@ function SuccessStoriesPage() {
 
               <a
                 href="/donate"
-                className="btn btn-light btn-lg rounded-pill px-5"
+                className="btn btn-light btn-lg rounded-pill px-5 text-success"
               >
                 Donate Today
               </a>
@@ -782,6 +786,7 @@ function SuccessStoriesPage() {
               <a
                 href="/volunteer"
                 className="btn btn-outline-light btn-lg rounded-pill px-5"
+                style={{ borderColor: "rgba(255,255,255,0.8)" }}
               >
                 Become a Volunteer
               </a>

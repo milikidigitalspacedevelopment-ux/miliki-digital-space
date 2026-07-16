@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import { pool } from "../config/db.js";
 import { normalizeEventPayload } from "../utils/eventUtils.js";
+import { triggerContentNotifications } from "../services/communicationsService.js";
 
 export const getEvents = asyncHandler(async (req, res) => {
   const { q, status, page = 1, perPage = 20 } = req.query;
@@ -60,7 +61,21 @@ export const createEvent = asyncHandler(async (req, res) => {
     [payload.title, payload.description, payload.category_id, payload.organizer_id, payload.status, payload.start_date, payload.end_date, payload.location, payload.max_attendees, payload.image_url]
   );
 
-  res.status(201).json(result.rows[0]);
+  const createdEvent = result.rows[0];
+
+  try {
+    await triggerContentNotifications({
+      entityType: "event",
+      title: createdEvent.title,
+      message: `A new event, ${createdEvent.title}, has been added.`,
+      actionUrl: `/events/${createdEvent.id}`,
+      userId: payload.organizer_id || null,
+    });
+  } catch (notificationError) {
+    console.error("Event notification dispatch failed", notificationError.message);
+  }
+
+  res.status(201).json(createdEvent);
 });
 
 export const updateEvent = asyncHandler(async (req, res) => {

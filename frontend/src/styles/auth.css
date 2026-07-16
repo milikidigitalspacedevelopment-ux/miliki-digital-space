@@ -95,7 +95,7 @@
 .progress-bar[style*="width: 20%"]{ background:#dc3545; }
 .progress-bar[style*="width: 40%"]{ background:#fd7e14; }
 .progress-bar[style*="width: 60%"]{ background:var(--miliki-yellow); }
-.progress-bar[style*="width: 80%"]{ background:#0d6efd; }
+.progress-bar[style*="width: 80%"]{ background:#198754; }
 .progress-bar[style*="width: 100%"]{ background:var(--miliki-green); }
 
 /* small devices adjustments */

@@ -264,7 +264,7 @@ function VolunteersPage() {
         {(!loading ? filteredVolunteers : []).map((volunteer) => (
           <div key={volunteer.id} className="col-xl-3 col-lg-4 col-md-6">
             <div className="card border-0 shadow-sm rounded-5 h-100 overflow-hidden">
-              <div className="text-center py-4" style={{ background: "linear-gradient(135deg,#0d6efd,#20c997)" }}>
+              <div className="text-center py-4" style={{ background: "linear-gradient(135deg,#198754,#2e8b57)" }}>
                 <div className="rounded-circle bg-white mx-auto d-flex align-items-center justify-content-center" style={{ width: 90, height: 90 }}>
                   <Users size={40} className="text-primary" />
                 </div>

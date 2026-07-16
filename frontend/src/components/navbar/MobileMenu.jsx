@@ -147,6 +147,8 @@ function MobileMenu({
                     return People;
                   case "/donate":
                     return Gift;
+                  case "/success-stories":
+                    return Heart;
                   default:
                     return InfoCircle;
                 }

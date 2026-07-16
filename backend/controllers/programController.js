@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import { pool } from "../config/db.js";
+import { triggerContentNotifications } from "../services/communicationsService.js";
 
 const slugify = (value) =>
   String(value || "")
@@ -181,7 +182,21 @@ export const createProgram = asyncHandler(async (req, res) => {
     ]
   );
 
-  res.status(201).json(result.rows[0]);
+  const createdProgram = result.rows[0];
+
+  try {
+    await triggerContentNotifications({
+      entityType: "program",
+      title: createdProgram.title,
+      message: `A new program, ${createdProgram.title}, is now available.`,
+      actionUrl: `/programs/${createdProgram.id}`,
+      userId: created_by || null,
+    });
+  } catch (notificationError) {
+    console.error("Program notification dispatch failed", notificationError.message);
+  }
+
+  res.status(201).json(createdProgram);
 });
 
 export const updateProgram = asyncHandler(async (req, res) => {

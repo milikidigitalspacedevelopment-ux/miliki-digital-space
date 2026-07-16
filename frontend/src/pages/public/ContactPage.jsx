@@ -9,16 +9,29 @@ function ContactPage() {
 
       <section className="py-5 bg-light">
         <div className="container">
-          <div className="overflow-hidden shadow" style={{ borderRadius: "40px" }}>
-            <iframe
-              title="location"
-              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d3988.123456789012!2d36.9003507!3d-1.0078367!2m3!1f0!2f0!3f0!3m2!1m1!2s!5e0!3m2!1sen!2ske!4v0000000000000"
-              width="100%"
-              height="450"
-              style={{ border: 0 }}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+          <div className="row g-4 align-items-stretch">
+            <div className="col-lg-6">
+              <div className="card border-0 shadow-sm h-100 rounded-4">
+                <div className="card-body p-4">
+                  <h3 className="fw-bold mb-3">Visit us</h3>
+                  <p className="text-muted mb-4">We are based in Nairobi and welcome visits from partners, volunteers, and supporters.</p>
+                  <ul className="list-unstyled mb-0">
+                    <li className="mb-2"><strong>Address:</strong> Nairobi, Kenya</li>
+                    <li className="mb-2"><strong>Email:</strong> info@miliki.org</li>
+                    <li className="mb-2"><strong>Phone:</strong> +254790171131</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div className="col-lg-6">
+              <div className="card border-0 shadow-sm h-100 rounded-4">
+                <div className="card-body p-4">
+                  <h3 className="fw-bold mb-3">Prefer a quick call?</h3>
+                  <p className="text-muted mb-4">We aim to respond within one working day and can help you with volunteering, partnerships, or program enquiries.</p>
+                  <a href="mailto:info@miliki.org" className="btn btn-success rounded-pill">Email us now</a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

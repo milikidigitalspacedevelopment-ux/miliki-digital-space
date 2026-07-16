@@ -62,7 +62,7 @@ const [commentMessage, setCommentMessage] = useState("");
         beneficiaries: 1200,
 
         image:
-          "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
+          "/impact.png",
 
         description:
           "Empowering underserved youth through digital literacy, entrepreneurship and employability training.",
@@ -85,10 +85,10 @@ const [commentMessage, setCommentMessage] = useState("");
           "Create employment opportunities and sustainable livelihoods.",
 
         gallery: [
-          "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
-          "https://images.unsplash.com/photo-1523240795612-9a054b0db644",
-          "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
-          "https://images.unsplash.com/photo-1516321497487-e288fb19713f",
+          "/impact.png",
+          "/impact.png",
+          "/impact.png",
+          "/impact.png",
         ],
 
         updates: [
@@ -142,7 +142,7 @@ const [commentMessage, setCommentMessage] = useState("");
           id: 2,
           title: "Women Entrepreneurship",
           image:
-            "https://images.unsplash.com/photo-1521791136064-7986c2920216",
+            "/impact.png",
           category: "Women Empowerment",
           raisedAmount: 22000,
           goalAmount: 40000,
@@ -152,7 +152,7 @@ const [commentMessage, setCommentMessage] = useState("");
           id: 3,
           title: "Agriculture Support",
           image:
-            "https://images.unsplash.com/photo-1500937386664-56d1dfef3854",
+            "/impact.png",
           category: "Agriculture",
           raisedAmount: 18000,
           goalAmount: 30000,

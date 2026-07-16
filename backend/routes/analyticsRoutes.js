@@ -1,6 +1,7 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { pool } from "../config/db.js";
+import { buildImpactStats } from "../utils/analyticsUtils.js";
 
 const router = express.Router();
 
@@ -27,35 +28,7 @@ const getPublishedStories = async () => {
   return result.rows.map(normalizeStoryRow);
 };
 
-const getImpactStats = async () => {
-  const [yearsResult, communitiesResult, graduatesResult, livesResult, jobsResult, growthResult] = await Promise.all([
-    pool.query("SELECT EXTRACT(YEAR FROM AGE(NOW(), COALESCE(MIN(created_at), NOW())))::int AS years FROM users"),
-    pool.query("SELECT COUNT(DISTINCT NULLIF(location, '')) AS communities FROM events"),
-    pool.query("SELECT COUNT(*) AS graduates FROM certificates"),
-    pool.query("SELECT COUNT(*) AS lives_impacted FROM users"),
-    pool.query("SELECT COUNT(*) AS jobs_created FROM volunteers"),
-    pool.query(
-      `SELECT TO_CHAR(DATE_TRUNC('month', published_at), 'YYYY-MM') AS month,
-              COUNT(*)::int AS value
-       FROM certificates
-       WHERE published_at IS NOT NULL
-       GROUP BY month
-       ORDER BY month ASC
-       LIMIT 12`
-    ),
-  ]);
-
-  return {
-    stats: {
-      years: yearsResult.rows[0]?.years || 1,
-      communities: communitiesResult.rows[0]?.communities || 0,
-      graduates: graduatesResult.rows[0]?.graduates || 0,
-      livesImpacted: livesResult.rows[0]?.lives_impacted || 0,
-      jobsCreated: jobsResult.rows[0]?.jobs_created || 0,
-    },
-    growthOverTime: growthResult.rows.map((row) => ({ month: row.month, value: Number(row.value) })),
-  };
-};
+const getImpactStats = async () => buildImpactStats((query) => pool.query(query));
 
 router.get("/", asyncHandler(async (req, res) => {
   const [users, programs, courses, donations] = await Promise.all([

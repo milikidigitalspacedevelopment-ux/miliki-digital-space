@@ -7,7 +7,7 @@ function NotFoundPage() {
       style={{
         minHeight: "100vh",
         background:
-          "linear-gradient(135deg,#0d6efd,#6610f2)"
+          "linear-gradient(135deg,#198754 0%,#2e8b57 50%,#22c55e 100%)"
       }}
     >
       {/* blobs */}

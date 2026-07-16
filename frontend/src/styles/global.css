@@ -1,3 +1,69 @@
+:root {
+    --bs-primary: #198754;
+    --bs-primary-rgb: 25, 135, 84;
+    --bs-success: #198754;
+    --bs-success-rgb: 25, 135, 84;
+    --bs-link-color: #198754;
+    --bs-link-hover-color: #157347;
+}
+
+.btn-primary,
+.btn-outline-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    color: #fff !important;
+}
+
+.btn-primary,
+.btn-outline-primary {
+    background-color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    background-color: #157347 !important;
+    border-color: #157347 !important;
+}
+
+.btn-outline-primary {
+    color: var(--bs-primary) !important;
+    background-color: transparent !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    color: #fff !important;
+    background-color: var(--bs-primary) !important;
+}
+
+.text-primary,
+.text-primary-custom {
+    color: var(--bs-primary) !important;
+}
+
+.bg-primary {
+    background-color: var(--bs-primary) !important;
+}
+
+.bg-primary-subtle {
+    background-color: rgba(25, 135, 84, 0.12) !important;
+    color: var(--bs-primary) !important;
+}
+
+.border-primary {
+    border-color: var(--bs-primary) !important;
+}
+
 /* =========================
    RESET
 ========================= */
@@ -182,6 +248,43 @@ body{
     font-size:12px;
 }
 
+.blog-content img{
+    max-width: 90%;
+    width: auto;
+    height: auto;
+    display: block;
+    margin: 1.5rem auto;
+    border-radius: 1rem;
+}
+
+.blog-content strong,
+.blog-content b {
+    font-weight: 700;
+    color: #0f2f1d;
+}
+
+.blog-share-buttons {
+    flex-wrap: nowrap;
+}
+
+.blog-share-buttons button {
+    min-width: 0;
+}
+
+@media (max-width: 767px) {
+    .blog-share-buttons {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .blog-share-buttons button {
+        white-space: nowrap;
+        padding-left: 0.9rem;
+        padding-right: 0.9rem;
+        font-size: 0.85rem;
+    }
+}
+
 /* Collapsed mobile bottom bar: only show icons and move slightly downward */
 .mobile-bottom-bar{
     transition: transform .18s ease, padding .18s ease;
@@ -237,7 +340,7 @@ body{
 }
 
 main{
-    margin-top: 105px; /* matches approximate height of navbar */
+    margin-top: 90px; /* matches approximate height of navbar */
 }
 
 /* Testimonials marquee */

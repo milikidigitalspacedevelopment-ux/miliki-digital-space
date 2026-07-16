@@ -295,13 +295,21 @@ CREATE TABLE IF NOT EXISTS blogs (
 	featured_image TEXT,
 	likes INTEGER DEFAULT 0,
 	views INTEGER DEFAULT 0,
+	share_count INTEGER DEFAULT 0,
+	time_spent_seconds INTEGER DEFAULT 0,
 	featured BOOLEAN DEFAULT FALSE,
 	published_at TIMESTAMPTZ,
+	excerpt TEXT,
+	seo_title TEXT,
+	meta_description TEXT,
 	created_at TIMESTAMPTZ DEFAULT now(),
 	updated_at TIMESTAMPTZ DEFAULT now()
 );
 
 ALTER TABLE IF NOT EXISTS blogs ADD COLUMN IF NOT EXISTS featured BOOLEAN DEFAULT FALSE;
+ALTER TABLE IF NOT EXISTS blogs ADD COLUMN IF NOT EXISTS excerpt TEXT;
+ALTER TABLE IF NOT EXISTS blogs ADD COLUMN IF NOT EXISTS seo_title TEXT;
+ALTER TABLE IF NOT EXISTS blogs ADD COLUMN IF NOT EXISTS meta_description TEXT;
 
 -- Stories
 CREATE TABLE IF NOT EXISTS stories (
@@ -316,7 +324,18 @@ CREATE TABLE IF NOT EXISTS stories (
 	created_at TIMESTAMPTZ DEFAULT now(),
 	updated_at TIMESTAMPTZ DEFAULT now()
 );
-
+CREATE TABLE IF NOT EXISTS testimonials (
+	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+	name TEXT NOT NULL DEFAULT 'Anonymous',
+	role TEXT,
+	organization TEXT,
+	email TEXT,
+	quote TEXT NOT NULL,
+	image_url TEXT,
+	status TEXT DEFAULT 'pending',
+	created_at TIMESTAMPTZ DEFAULT now(),
+	updated_at TIMESTAMPTZ DEFAULT now()
+);
 -- ==========================================
 -- PARTNERSHIPS & CAMPAIGNS
 -- ==========================================

@@ -14,8 +14,12 @@ import PartnersPage from "../pages/admin/PartnersPage";
 import StoriesPage from "../pages/admin/StoriesPage";
 import DonorsPage from "../pages/admin/DonorsPage";
 import VolunteerAdminPage from "../pages/admin/VolunteerAdminPage";
+import BlogEditorPage from "../pages/admin/BlogEditorPage";
 import ReportsPage from "../pages/admin/ReportsPage";
 import SettingsPage from "../pages/admin/SettingsPage";
+import GalleryAdminPage from "../pages/admin/GalleryAdminPage";
+import CommunicationsPage from "../pages/admin/CommunicationsPage";
+import TestimonialsPage from "../pages/admin/TestimonialsPage";
 
 function AdminRoutes() {
   return (
@@ -32,6 +36,8 @@ function AdminRoutes() {
         <Route path="programs" element={<ProgramsPage />} />
 
         <Route path="blogs" element={<BlogsPage />} />
+        <Route path="blogs/new" element={<BlogEditorPage />} />
+        <Route path="blogs/:id/edit" element={<BlogEditorPage />} />
 
         <Route path="events" element={<EventsPage />} />
 
@@ -46,6 +52,9 @@ function AdminRoutes() {
         <Route path="volunteers" element={<VolunteerAdminPage />} />
 
         <Route path="stories" element={<StoriesPage />} />
+        <Route path="gallery" element={<GalleryAdminPage />} />
+        <Route path="communications" element={<CommunicationsPage />} />
+        <Route path="testimonials" element={<TestimonialsPage />} />
 
         <Route path="reports" element={<ReportsPage />} />
 

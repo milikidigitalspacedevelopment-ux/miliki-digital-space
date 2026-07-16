@@ -21,6 +21,8 @@ import SuccessStoriesPage from "../pages/public/SuccessStoriesPage";
 import VolunteerPage from "../pages/public/VolunteerPage";
 import DonatePage from "../pages/public/DonatePage";
 import ContactPage from "../pages/public/ContactPage";
+import PrivacyPolicyPage from "../pages/public/PrivacyPolicyPage";
+import TermsPage from "../pages/public/TermsPage";
 import NotFoundPage from "../pages/public/NotFoundPage";
 
 function PublicRoutes() {
@@ -34,7 +36,7 @@ function PublicRoutes() {
         <Route path="/about" element={<AboutPage />} />
 
         <Route path="/blogs" element={<BlogPage />} />
-        <Route path="/blogs/:id" element={<BlogDetailsPage />} />
+        <Route path="/blogs/:slug" element={<BlogDetailsPage />} />
 
         <Route path="/campaigns" element={<CampaignsPage />} />
         <Route path="/campaigns/:id" element={<CampaignDetailsPage />} />
@@ -72,6 +74,16 @@ function PublicRoutes() {
         <Route
           path="/contact"
           element={<ContactPage />}
+        />
+
+        <Route
+          path="/privacy-policy"
+          element={<PrivacyPolicyPage />}
+        />
+
+        <Route
+          path="/terms"
+          element={<TermsPage />}
         />
 
       </Route>

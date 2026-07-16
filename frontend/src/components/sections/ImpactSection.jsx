@@ -18,7 +18,7 @@ function ImpactSection() {
                   inset: "1rem",
                   borderRadius: "2rem",
                   background:
-                    "linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(59, 130, 246, 0.16))",
+                    "linear-gradient(135deg, rgba(25, 135, 84, 0.18), rgba(34, 197, 94, 0.16))",
                   transform: "rotate(-3deg)",
                   zIndex: 0,
                 }}

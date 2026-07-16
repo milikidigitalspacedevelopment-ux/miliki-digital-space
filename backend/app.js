@@ -21,11 +21,15 @@ import campaignRoutes from "./routes/campaignRoutes.js";
 import donationRoutes from "./routes/donationRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
+import shareRoutes from "./routes/shareRoutes.js";
 import storyRoutes from "./routes/storyRoutes.js";
+import testimonialRoutes from "./routes/testimonialRoutes.js";
 import contentRoutes from "./routes/contentRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import faqRoutes from "./routes/faqRoutes.js";
+import galleryRoutes from "./routes/galleryRoutes.js";
+import communicationsRoutes from "./routes/communicationsRoutes.js";
 import { notFoundHandler, errorHandler } from "./middlewares/errorMiddleware.js";
 
 dotenv.config();
@@ -47,6 +51,9 @@ const corsOptions = {
       callback(new Error(`CORS policy does not allow access from origin ${origin}`));
     }
   },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(helmet());
@@ -80,10 +87,15 @@ app.use("/api/donations", donationRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/stories", storyRoutes);
+app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/content", contentRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/faqs", faqRoutes);
+app.use("/api/gallery", galleryRoutes);
+app.use("/api/communications", communicationsRoutes);
+
+app.use("/api/shares", shareRoutes);
 
 // Uploads
 app.use("/api/uploads", uploadRoutes);

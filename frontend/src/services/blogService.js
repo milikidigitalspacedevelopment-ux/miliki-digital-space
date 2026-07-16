@@ -25,6 +25,21 @@ const blogService = {
 
   getBlogById: async (id) => blogService.getBlog(id),
 
+  trackView: async (id) => {
+    const response = await api.post(`/blogs/${id}/track-view`);
+    return response.data;
+  },
+
+  trackShare: async (id) => {
+    const response = await api.post(`/blogs/${id}/track-share`);
+    return response.data;
+  },
+
+  trackTimeSpent: async (id, seconds) => {
+    const response = await api.post(`/blogs/${id}/track-time`, { seconds });
+    return response.data;
+  },
+
   createBlog: async (payload) => {
     const response = await api.post(`/blogs`, payload);
     return response.data;

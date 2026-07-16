@@ -10,6 +10,7 @@ export const links = [
   { name: "Impact", path: "/impact" },
   { name: "Volunteer", path: "/volunteer" },
   { name: "Donate", path: "/donate" },
+  { name: "Stories", path: "/success-stories" },
   { name: "Contact", path: "/contact" },
 ];
 

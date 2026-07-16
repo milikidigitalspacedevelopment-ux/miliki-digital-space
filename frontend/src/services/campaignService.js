@@ -22,6 +22,21 @@ const campaignService = {
 
   getCampaignById: async (id) => campaignService.getCampaign(id),
 
+  createCampaign: async (data) => {
+    const response = await api.post("/campaigns", data);
+    return normalizeItem(response.data ?? response);
+  },
+
+  updateCampaign: async (id, data) => {
+    const response = await api.put(`/campaigns/${id}`, data);
+    return normalizeItem(response.data ?? response);
+  },
+
+  deleteCampaign: async (id) => {
+    const response = await api.delete(`/campaigns/${id}`);
+    return response.data;
+  },
+
   donateToCampaign: async (id, data) => {
     const response = await api.post(`/campaigns/${id}/donate`, data);
     return response.data;

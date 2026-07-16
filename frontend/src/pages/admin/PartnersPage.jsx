@@ -269,7 +269,7 @@ function PartnersPage() {
           <div key={partner.id} className="col-xl-3 col-lg-4 col-md-6">
             <div className="card border-0 shadow-sm rounded-5 h-100 overflow-hidden">
 
-              <div className="text-center py-4" style={{ background: "linear-gradient(135deg,#0d6efd,#20c997)" }}>
+              <div className="text-center py-4" style={{ background: "linear-gradient(135deg,#198754,#2e8b57)" }}>
                 <img src={partner.logo_url || '/assets/placeholder-80.png'} alt={partner.name} className="rounded-circle bg-white p-2" width="90" height="90" />
               </div>
 

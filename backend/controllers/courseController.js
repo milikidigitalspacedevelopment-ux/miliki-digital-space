@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import { pool } from "../config/db.js";
+import { triggerContentNotifications } from "../services/communicationsService.js";
 
 /* ============================================================
    HELPERS
@@ -671,6 +672,18 @@ export const createCourse = asyncHandler(async (req, res) => {
     course.requirements = reqList;
     course.learning_outcomes = outcomes;
     course.career_opportunities = opportunities;
+
+    try {
+      await triggerContentNotifications({
+        entityType: "course",
+        title: course.title,
+        message: `A new course, ${course.title}, is now open for registration.`,
+        actionUrl: `/courses/${course.id}`,
+        userId: instructor_id || null,
+      });
+    } catch (notificationError) {
+      console.error("Course notification dispatch failed", notificationError.message);
+    }
 
     res.status(201).json(course);
   } catch (error) {

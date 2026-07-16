@@ -1,25 +1,45 @@
+import { useEffect, useMemo, useState } from "react";
 import SectionHeader from "../common/SectionHeader";
-
-const albums = [
-  {
-    title: "Training Albums",
-    images: [
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-      "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d",
-      "https://images.unsplash.com/photo-1508672019048-805c876b67e2",
-    ],
-  },
-  {
-    title: "Community Events",
-    images: [
-      "https://images.unsplash.com/photo-1482192596544-9eb780fc7f66",
-      "https://images.unsplash.com/photo-1519681393784-d120267933ba",
-      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
-    ],
-  },
-];
+import galleryService from "../../services/galleryService";
 
 function GallerySection() {
+  const [albums, setAlbums] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadGallery = async () => {
+      try {
+        const data = await galleryService.listImages();
+        const images = Array.isArray(data) ? data : [];
+        const grouped = images.reduce((acc, image) => {
+          const albumName = image.album || "General";
+          if (!acc[albumName]) acc[albumName] = [];
+          acc[albumName].push(image);
+          return acc;
+        }, {});
+        setAlbums(Object.entries(grouped).map(([title, imagesInAlbum]) => ({ title, images: imagesInAlbum })));
+      } catch (error) {
+        console.error("Failed to load gallery images", error);
+        setAlbums([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void loadGallery();
+  }, []);
+
+  const fallbackAlbums = useMemo(() => [
+    {
+      title: "Community Highlights",
+      images: [
+        { image_url: "/images/impact.png", title: "Community highlight" },
+      ],
+    },
+  ], []);
+
+  const visibleAlbums = albums.length > 0 ? albums : fallbackAlbums;
+
   return (
     <section className="container py-3">
       <SectionHeader
@@ -27,29 +47,33 @@ function GallerySection() {
         subtitle="Albums and highlights from our programs and community work"
       />
 
-      <div className="gallery-album-list">
-        {albums.map((album) => (
-          <div className="gallery-album" key={album.title}>
-            <h3 className="mb-3">{album.title}</h3>
-            <div className="gallery-marquee-wrapper">
-              <div className="gallery-marquee-track">
-                {[...album.images, ...album.images].map((src, idx) => (
-                  <div className="gallery-album-item" key={`${album.title}-${idx}`}>
-                    <div className="bg-white shadow-sm overflow-hidden" style={{ borderRadius: 20 }}>
-                      <img
-                        src={`${src}?auto=format&fit=crop&w=900&q=70`}
-                        alt={`${album.title} ${idx + 1}`}
-                        className="w-100"
-                        style={{ height: 260, objectFit: "cover" }}
-                      />
+      {loading ? (
+        <div className="text-muted">Loading gallery images...</div>
+      ) : (
+        <div className="gallery-album-list">
+          {visibleAlbums.map((album) => (
+            <div className="gallery-album" key={album.title}>
+              <h3 className="mb-3">{album.title}</h3>
+              <div className="gallery-marquee-wrapper">
+                <div className="gallery-marquee-track">
+                  {[...album.images, ...album.images].map((item, idx) => (
+                    <div className="gallery-album-item" key={`${album.title}-${idx}`}>
+                      <div className="bg-white shadow-sm overflow-hidden" style={{ borderRadius: 20 }}>
+                        <img
+                          src={item.image_url || "/images/impact.png"}
+                          alt={item.title || `${album.title} ${idx + 1}`}
+                          className="w-100"
+                          style={{ height: 260, objectFit: "cover" }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

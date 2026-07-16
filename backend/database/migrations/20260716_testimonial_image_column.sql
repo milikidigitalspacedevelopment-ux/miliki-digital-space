@@ -1,0 +1,2 @@
+ALTER TABLE IF EXISTS testimonials
+ADD COLUMN IF NOT EXISTS image_url TEXT;
